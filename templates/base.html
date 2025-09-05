@@ -31,6 +31,11 @@
                                     <i class="fas fa-search me-1"></i>My Matches
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('view_applications') }}">
+                                    <i class="fas fa-paper-plane me-1"></i>My Applications
+                                </a>
+                            </li>
                         {% elif session.user_type == 'company' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('company_dashboard') }}">

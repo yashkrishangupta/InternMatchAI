@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app import app, db
-from models import Student, Company, Internship, Match
+from models import Student, Company, Internship, Match, Application
 from matching_engine import InternshipMatchingEngine
 import logging
 
@@ -322,6 +322,63 @@ def generate_all_matches():
         flash('Failed to generate matches. Please try again.', 'error')
     
     return redirect(url_for('index'))
+
+@app.route('/student/apply/<int:internship_id>', methods=['POST'])
+def apply_internship(internship_id):
+    """Apply to an internship"""
+    if session.get('user_type') != 'student':
+        return redirect(url_for('index'))
+    
+    try:
+        student_id = session['user_id']
+        
+        # Check if already applied
+        existing_application = Application.query.filter_by(
+            student_id=student_id, 
+            internship_id=internship_id
+        ).first()
+        
+        if existing_application:
+            flash('You have already applied to this internship', 'warning')
+            return redirect(url_for('view_matches'))
+        
+        # Get form data
+        cover_letter = request.form.get('cover_letter', '')
+        portfolio_url = request.form.get('portfolio_url', '')
+        additional_notes = request.form.get('additional_notes', '')
+        
+        # Create application
+        application = Application(
+            student_id=student_id,
+            internship_id=internship_id,
+            cover_letter=cover_letter,
+            portfolio_url=portfolio_url,
+            additional_notes=additional_notes
+        )
+        
+        db.session.add(application)
+        db.session.commit()
+        
+        flash('Application submitted successfully!', 'success')
+        return redirect(url_for('view_applications'))
+        
+    except Exception as e:
+        logging.error(f"Error applying to internship: {e}")
+        flash('Failed to submit application. Please try again.', 'error')
+        db.session.rollback()
+        return redirect(url_for('view_matches'))
+
+@app.route('/student/applications')
+def view_applications():
+    """View all applications for current student"""
+    if session.get('user_type') != 'student':
+        return redirect(url_for('index'))
+    
+    student_id = session['user_id']
+    applications = Application.query.filter_by(student_id=student_id)\
+                                  .order_by(Application.applied_at.desc()).all()
+    
+    return render_template('applications.html', applications=applications)
 
 @app.route('/internship/<int:internship_id>')
 def view_internship(internship_id):

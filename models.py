@@ -39,6 +39,7 @@ class Student(db.Model):
     
     # Relationships
     matches = db.relationship('Match', backref='student', lazy=True)
+    applications = db.relationship('Application', backref='student', lazy=True)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -112,6 +113,7 @@ class Internship(db.Model):
     
     # Relationships
     matches = db.relationship('Match', backref='internship', lazy=True)
+    applications = db.relationship('Application', backref='internship', lazy=True)
 
 class Match(db.Model):
     __tablename__ = 'matches'
@@ -132,4 +134,29 @@ class Match(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Ensure unique student-internship pairs
+    __table_args__ = (db.UniqueConstraint('student_id', 'internship_id'),)
+
+class Application(db.Model):
+    __tablename__ = 'applications'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
+    internship_id = db.Column(db.Integer, db.ForeignKey('internships.id'), nullable=False)
+    
+    # Application Information
+    cover_letter = db.Column(db.Text)
+    portfolio_url = db.Column(db.String(255))
+    additional_notes = db.Column(db.Text)
+    
+    # Application Status
+    status = db.Column(db.String(50), default='pending')  # pending, under_review, shortlisted, accepted, rejected
+    applied_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Company Response
+    company_notes = db.Column(db.Text)
+    interview_date = db.Column(db.DateTime)
+    response_date = db.Column(db.DateTime)
+    
+    # Ensure unique student-internship applications
     __table_args__ = (db.UniqueConstraint('student_id', 'internship_id'),)
