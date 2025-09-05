@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">
+                <i class="fas fa-brain text-info me-3"></i>
+                AI Internship Matching System
+            </h1>
+            <p class="lead">Smart, automated matching of students with the perfect internship opportunities using advanced AI algorithms</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-robot fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">AI-Powered Matching</h5>
+                        <p class="card-text">Advanced machine learning algorithms analyze skills, preferences, and qualifications to find the perfect internship matches.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-balance-scale fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Fair & Inclusive</h5>
+                        <p class="card-text">Implements affirmative action policies to ensure representation from rural districts and diverse social categories.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Smart Analytics</h5>
+                        <p class="card-text">Detailed scoring system considering skills compatibility, location preferences, and academic achievements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if not session.user_type %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center mb-4">Get Started</h4>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <a href="{{ url_for('student_register') }}" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-user-graduate me-2"></i>
+                                        Register as Student
+                                    </a>
+                                </div>
+                                <p class="text-center mt-2 small text-muted">Find your perfect internship opportunity</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <a href="{{ url_for('company_register') }}" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-building me-2"></i>
+                                        Register as Company
+                                    </a>
+                                </div>
+                                <p class="text-center mt-2 small text-muted">Find the best talent for your internships</p>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">Already have an account?</h5>
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <input type="email" class="form-control" name="email" placeholder="Email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <select name="user_type" class="form-select" required>
+                                        <option value="">Select User Type</option>
+                                        <option value="student">Student</option>
+                                        <option value="company">Company</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-5">
+            <h3 class="text-center mb-4">How It Works</h3>
+            <div class="row g-4">
+                <div class="col-md-3 text-center">
+                    <div class="bg-info rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <span class="text-white fw-bold">1</span>
+                    </div>
+                    <h6>Register & Create Profile</h6>
+                    <p class="small text-muted">Students and companies create detailed profiles with skills, preferences, and requirements.</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="bg-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <span class="text-white fw-bold">2</span>
+                    </div>
+                    <h6>AI Analysis</h6>
+                    <p class="small text-muted">Our AI algorithms analyze compatibility based on multiple criteria and fairness factors.</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="bg-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <span class="text-white fw-bold">3</span>
+                    </div>
+                    <h6>Smart Matching</h6>
+                    <p class="small text-muted">Generate personalized matches with detailed compatibility scores and rankings.</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="bg-danger rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <span class="text-white fw-bold">4</span>
+                    </div>
+                    <h6>Connect & Apply</h6>
+                    <p class="small text-muted">Students view their best matches and connect with companies for internship opportunities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

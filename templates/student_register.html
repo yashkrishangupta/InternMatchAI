@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-user-graduate me-2"></i>Student Registration
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Basic Information -->
+                    <h5 class="mb-3 text-info">Basic Information</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Password *</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone">
+                        </div>
+                    </div>
+
+                    <!-- Academic Information -->
+                    <h5 class="mb-3 text-info">Academic Information</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Institution *</label>
+                            <input type="text" class="form-control" name="institution" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Course/Degree *</label>
+                            <input type="text" class="form-control" name="course" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Year of Study</label>
+                            <select class="form-select" name="year_of_study">
+                                <option value="">Select Year</option>
+                                <option value="1">First Year</option>
+                                <option value="2">Second Year</option>
+                                <option value="3">Third Year</option>
+                                <option value="4">Fourth Year</option>
+                                <option value="5">Fifth Year</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">CGPA/Percentage</label>
+                            <input type="number" class="form-control" name="cgpa" step="0.01" min="0" max="10">
+                        </div>
+                    </div>
+
+                    <!-- Skills and Interests -->
+                    <h5 class="mb-3 text-info">Skills and Interests</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Technical Skills</label>
+                            <textarea class="form-control" name="technical_skills" rows="3" 
+                                      placeholder="e.g., Python, Java, Web Development, Data Analysis"></textarea>
+                            <div class="form-text">Separate skills with commas</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Soft Skills</label>
+                            <textarea class="form-control" name="soft_skills" rows="3" 
+                                      placeholder="e.g., Communication, Leadership, Problem Solving"></textarea>
+                            <div class="form-text">Separate skills with commas</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Sector Interests</label>
+                            <textarea class="form-control" name="sector_interests" rows="2" 
+                                      placeholder="e.g., Technology, Finance, Healthcare, Education"></textarea>
+                            <div class="form-text">Separate interests with commas</div>
+                        </div>
+                    </div>
+
+                    <!-- Location Preferences -->
+                    <h5 class="mb-3 text-info">Location Preferences</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Current Location</label>
+                            <input type="text" class="form-control" name="current_location">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Preferred Locations</label>
+                            <input type="text" class="form-control" name="preferred_locations" 
+                                   placeholder="e.g., Mumbai, Delhi, Bangalore, Remote">
+                            <div class="form-text">Separate locations with commas</div>
+                        </div>
+                    </div>
+
+                    <!-- Affirmative Action Information -->
+                    <h5 class="mb-3 text-info">Background Information</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Social Category</label>
+                            <select class="form-select" name="social_category">
+                                <option value="">Select Category</option>
+                                <option value="General">General</option>
+                                <option value="OBC">OBC</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">District Type</label>
+                            <select class="form-select" name="district_type">
+                                <option value="">Select Type</option>
+                                <option value="Urban">Urban</option>
+                                <option value="Rural">Rural</option>
+                                <option value="Aspirational">Aspirational District</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Home District</label>
+                            <input type="text" class="form-control" name="home_district">
+                        </div>
+                    </div>
+
+                    <!-- Previous Experience -->
+                    <h5 class="mb-3 text-info">Previous Experience</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Number of Previous Internships</label>
+                            <input type="number" class="form-control" name="previous_internships" min="0" value="0">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="pm_scheme_participant">
+                                <label class="form-check-label">
+                                    Previous PM Scheme Participant
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

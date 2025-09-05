@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Company Dashboard - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-building me-2"></i>{{ company.name }}
+                </h4>
+                <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create New Internship
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Industry:</strong></p>
+                        <p class="text-muted">{{ company.industry_sector }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Location:</strong></p>
+                        <p class="text-muted">{{ company.location or 'Not specified' }}</p>
+                    </div>
+                    {% if company.company_size %}
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Company Size:</strong></p>
+                        <p class="text-muted">{{ company.company_size }}</p>
+                    </div>
+                    {% endif %}
+                    {% if company.contact_person %}
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Contact Person:</strong></p>
+                        <p class="text-muted">{{ company.contact_person }}</p>
+                    </div>
+                    {% endif %}
+                    {% if company.description %}
+                    <div class="col-12">
+                        <p class="mb-1"><strong>Description:</strong></p>
+                        <p class="text-muted">{{ company.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-briefcase me-2"></i>Your Internships
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if internships %}
+                    {% for internship in internships %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">{{ internship.title }}</h6>
+                                <p class="mb-1 text-muted">{{ internship.sector }}</p>
+                                <p class="mb-0 small">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ internship.location or 'Location not specified' }}
+                                    {% if internship.duration_months %}
+                                        <span class="ms-3"><i class="fas fa-clock me-1"></i>{{ internship.duration_months }} months</span>
+                                    {% endif %}
+                                    {% if internship.stipend %}
+                                        <span class="ms-3"><i class="fas fa-rupee-sign me-1"></i>{{ "%.0f"|format(internship.stipend) }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="mb-2">
+                                    {% if internship.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted">
+                                    {{ internship.filled_positions }}/{{ internship.total_positions }} filled
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ ((internship.filled_positions / internship.total_positions) * 100)|int if internship.total_positions > 0 else 0 }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if internship.description %}
+                        <div class="mt-3">
+                            <p class="mb-0 small text-muted">{{ internship.description[:200] }}{% if internship.description|length > 200 %}...{% endif %}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if internship.required_skills %}
+                        <div class="mt-2">
+                            <strong class="small">Required Skills:</strong>
+                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                {% for skill in internship.required_skills.split(',')[:5] %}
+                                    <span class="badge bg-secondary">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center">
+                    <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                    <h5>No Internships Created</h5>
+                    <p class="text-muted">Create your first internship opportunity to start matching with talented students.</p>
+                    <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Internship
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Overview
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h4 class="text-primary mb-0">{{ internships|length }}</h4>
+                            <p class="small text-muted mb-0">Total Internships</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        {% set active_count = internships|selectattr("is_active")|list|length %}
+                        <h4 class="text-success mb-0">{{ active_count }}</h4>
+                        <p class="small text-muted mb-0">Active Internships</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            {% set total_positions = internships|sum(attribute='total_positions') %}
+                            <h4 class="text-info mb-0">{{ total_positions }}</h4>
+                            <p class="small text-muted mb-0">Total Positions</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        {% set filled_positions = internships|sum(attribute='filled_positions') %}
+                        <h4 class="text-warning mb-0">{{ filled_positions }}</h4>
+                        <p class="small text-muted mb-0">Filled Positions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="small mb-0">
+                    <li class="mb-2">Add detailed skill requirements to get better matches</li>
+                    <li class="mb-2">Include diversity quotas to support inclusive hiring</li>
+                    <li class="mb-2">Keep your internship descriptions up to date</li>
+                    <li class="mb-0">Use clear job titles that students can easily understand</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

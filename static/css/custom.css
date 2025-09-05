@@ -1,0 +1,211 @@
+/* Custom styles for AI Internship Matching System */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+/* Body and general styling */
+body {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.125);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Progress bars */
+.progress {
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--bs-light);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--bs-light);
+    margin-bottom: 0.5rem;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+/* Match cards */
+.match-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.match-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Score indicators */
+.score-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Custom utilities */
+.text-gradient {
+    background: linear-gradient(45deg, var(--primary-color), var(--info-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Animation for match generation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-group-vertical .btn {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Loading spinner */
+.spinner-custom {
+    width: 2rem;
+    height: 2rem;
+    border: 0.25em solid rgba(255, 255, 255, 0.25);
+    border-right-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Match breakdown visualization */
+.match-breakdown {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(108, 117, 125, 0.1));
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.skill-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin: 0.125rem;
+    background-color: rgba(13, 110, 253, 0.2);
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+/* Dark theme specific adjustments */
+[data-bs-theme="dark"] .bg-light {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--bs-light) !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
