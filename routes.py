@@ -93,6 +93,43 @@ def student_register():
     
     return render_template('complete_student_profile.html')
 
+@app.route('/complete_student_profile', methods=['GET', 'POST'])
+def complete_student_profile():
+    user_email = session.get('user_email')
+    if not user_email:
+        return redirect(url_for('login'))
+
+    student = Student.query.filter_by(email=user_email).first()
+    if not student:
+        flash("Student not found.", "danger")
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        # Update only fields submitted in the form
+        student.name = request.form.get('name', student.name)
+        student.phone = request.form.get('phone', student.phone)
+        student.institution = request.form.get('institution', student.institution)
+        student.course = request.form.get('course', student.course)
+        student.year_of_study = request.form.get('year_of_study', student.year_of_study)
+        student.cgpa = request.form.get('cgpa', student.cgpa)
+        student.technical_skills = request.form.get('technical_skills', student.technical_skills)
+        student.soft_skills = request.form.get('soft_skills', student.soft_skills)
+        student.sector_interests = request.form.get('sector_interests', student.sector_interests)
+        student.current_location = request.form.get('current_location', student.current_location)
+        student.preferred_locations = request.form.get('preferred_locations', student.preferred_locations)
+        student.social_category = request.form.get('social_category', student.social_category)
+        student.district_type = request.form.get('district_type', student.district_type)
+        student.home_district = request.form.get('home_district', student.home_district)
+        student.previous_internships = request.form.get('previous_internships', student.previous_internships)
+        student.pm_scheme_participant = bool(request.form.get('pm_scheme_participant', student.pm_scheme_participant))
+
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for('profile'))
+
+    return render_template('complete_student_profile.html', student=student)
+
+
 @app.route('/company/register', methods=['GET', 'POST'])
 def company_register():
     """Company registration"""
