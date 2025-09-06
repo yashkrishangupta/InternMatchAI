@@ -1,6 +1,7 @@
 # AI Internship Matching System - Dependencies for Independent Deployment
 # Core Flask Framework
 Flask>=3.1.2
+Flask-Migrate
 Flask-SQLAlchemy>=3.1.1
 Werkzeug>=3.1.3
 
