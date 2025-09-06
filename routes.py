@@ -12,6 +12,27 @@ def index():
     """Home page with registration options"""
     return render_template('index.html')
 
+@app.route('/profile')
+    def profile():
+        user_email = session.get('user_email')
+        if not user_email:
+            return redirect(url_for('login'))
+    
+        student = Student.query.filter_by(email=user_email).first()
+        if not student:
+            flash("Student not found.", "danger")
+            return redirect(url_for('index'))
+    
+        completeness_score, missing_fields = student.calculate_profile_completeness()
+    
+        return render_template(
+            'student_profile_view.html',
+            student=student,
+            completeness_score=completeness_score,
+            missing_fields=missing_fields
+        )
+
+
 @app.route('/student/register', methods=['GET', 'POST'])
 def student_register():
     """Student registration"""
