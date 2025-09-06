@@ -22,7 +22,7 @@
                     {% if session.user_type %}
                         {% if session.user_type == 'student' %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('complete_student_profile') }}">
+                                <a class="nav-link" href="{{ url_for('profile') }}">
                                     {% if session.get('google_auth') %}
                                         <img src="{{ session.get('profile_picture') or url_for('static', filename='images/default-avatar.png') }}" 
                                              alt="Profile" class="rounded-circle me-2" style="width: 24px; height: 24px;">
