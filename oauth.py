@@ -49,7 +49,12 @@ def create_google_flow():
     }
 
     flow = Flow.from_client_config(
-        client_config, scopes=["openid", "email", "profile"]
+        client_config,     
+        scopes=[
+        "openid",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile"
+    ]
     )
     flow.redirect_uri = get_redirect_uri()
     return flow
