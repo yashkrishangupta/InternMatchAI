@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Student Profile</h3>
+                {% if completeness_score < 100 %}
+                <a href="{{ url_for('complete_student_profile.html') }}" class="btn btn-warning">
+                    Complete Your Profile
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+
+                <!-- Profile Completeness Progress -->
+                <div class="mb-3">
+                    <div class="progress" style="height: 12px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ completeness_score }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ completeness_score }}% Complete</small>
+                </div>
+
+                {% macro display_field(label, value, missing_fields) %}
+                    <p>
+                        <strong>{{ label }}:</strong>
+                        {% if value %}
+                            {{ value }}
+                        {% else %}
+                            <span class="text-muted">Not Provided</span>
+                        {% endif %}
+                    </p>
+                {% endmacro %}
+
+                <!-- Basic Information -->
+                <h5 class="mb-2 text-info">Basic Information</h5>
+                {{ display_field('Full Name', student.name, missing_fields) }}
+                {{ display_field('Email', student.email, missing_fields) }}
+                {{ display_field('Phone Number', student.phone, missing_fields) }}
+                {{ display_field('Profile Picture', student.profile_picture, missing_fields) }}
+
+                <!-- Academic Information -->
+                <h5 class="mb-2 text-info">Academic Information</h5>
+                {{ display_field('Institution', student.institution, missing_fields) }}
+                {{ display_field('Course/Degree', student.course, missing_fields) }}
+                {{ display_field('Year of Study', student.year_of_study, missing_fields) }}
+                {{ display_field('CGPA/Percentage', student.cgpa, missing_fields) }}
+
+                <!-- Skills and Interests -->
+                <h5 class="mb-2 text-info">Skills and Interests</h5>
+                {{ display_field('Technical Skills', student.technical_skills, missing_fields) }}
+                {{ display_field('Soft Skills', student.soft_skills, missing_fields) }}
+                {{ display_field('Sector Interests', student.sector_interests, missing_fields) }}
+
+                <!-- Location Preferences -->
+                <h5 class="mb-2 text-info">Location Preferences</h5>
+                {{ display_field('Current Location', student.current_location, missing_fields) }}
+                {{ display_field('Preferred Locations', student.preferred_locations, missing_fields) }}
+
+                <!-- Background Information -->
+                <h5 class="mb-2 text-info">Background Information</h5>
+                {{ display_field('Social Category', student.social_category, missing_fields) }}
+                {{ display_field('District Type', student.district_type, missing_fields) }}
+                {{ display_field('Home District', student.home_district, missing_fields) }}
+
+                <!-- Previous Participation -->
+                <h5 class="mb-2 text-info">Previous Participation</h5>
+                {{ display_field('Number of Previous Internships', student.previous_internships, missing_fields) }}
+                {{ display_field('PM Scheme Participant', 'Yes' if student.pm_scheme_participant else 'No', missing_fields) }}
+
+                <!-- Optional: Show missing fields list separately -->
+                {% if missing_fields %}
+                <div class="mt-3">
+                    <h6 class="small text-warning">Missing Information:</h6>
+                    <ul class="small text-muted mb-0">
+                        {% for field in missing_fields %}
+                            <li>{{ field }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
