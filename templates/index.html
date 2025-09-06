@@ -15,8 +15,10 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="fas fa-robot fa-3x text-info mb-3"></i>
-                        <h5 class="card-title">AI-Powered Matching</h5>
+                        <div class="feature-icon text-info">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h5 class="card-title text-gradient">AI-Powered Matching</h5>
                         <p class="card-text">Advanced machine learning algorithms analyze skills, preferences, and qualifications to find the perfect internship matches.</p>
                     </div>
                 </div>
@@ -24,8 +26,10 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="fas fa-balance-scale fa-3x text-success mb-3"></i>
-                        <h5 class="card-title">Fair & Inclusive</h5>
+                        <div class="feature-icon text-success">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h5 class="card-title text-gradient">Fair & Inclusive</h5>
                         <p class="card-text">Implements affirmative action policies to ensure representation from rural districts and diverse social categories.</p>
                     </div>
                 </div>
@@ -33,8 +37,10 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">Smart Analytics</h5>
+                        <div class="feature-icon text-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="card-title text-gradient">Smart Analytics</h5>
                         <p class="card-text">Detailed scoring system considering skills compatibility, location preferences, and academic achievements.</p>
                     </div>
                 </div>
@@ -46,58 +52,58 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title text-center mb-4">Get Started</h4>
+                        <h2 class="card-title text-center mb-4 text-gradient">Get Started</h2>
                         
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-grid">
-                                    <a href="{{ url_for('student_register') }}" class="btn btn-primary btn-lg">
-                                        <i class="fas fa-user-graduate me-2"></i>
-                                        Register as Student
-                                    </a>
-                                </div>
-                                <p class="text-center mt-2 small text-muted">Find your perfect internship opportunity</p>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-grid">
-                                    <a href="{{ url_for('company_register') }}" class="btn btn-outline-secondary btn-lg">
-                                        <i class="fas fa-building me-2"></i>
-                                        Register as Company
-                                    </a>
-                                </div>
-                                <p class="text-center mt-2 small text-muted">Find the best talent for your internships</p>
-                            </div>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <h5 class="mb-3">Already have an account?</h5>
-                        <form method="POST" action="{{ url_for('login') }}">
-                            <div class="row g-3">
+                        <!-- Google OAuth Registration -->
+                        <div class="mb-4">
+                            <h5 class="text-center mb-4">
+                                <i class="fab fa-google me-2 text-danger"></i>Register with Google
+                            </h5>
+                            <div class="row g-4">
                                 <div class="col-md-6">
-                                    <input type="email" class="form-control" name="email" placeholder="Email" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="password" class="form-control" name="password" placeholder="Password" required>
-                                </div>
-                            </div>
-                            <div class="row g-3 mt-2">
-                                <div class="col-md-6">
-                                    <select name="user_type" class="form-select" required>
-                                        <option value="">Select User Type</option>
-                                        <option value="student">Student</option>
-                                        <option value="company">Company</option>
-                                    </select>
+                                    <div class="d-grid">
+                                        <a href="{{ url_for('google_auth', type='student') }}" class="btn btn-danger btn-lg">
+                                            <i class="fab fa-google me-2"></i>
+                                            Register as Student
+                                        </a>
+                                    </div>
+                                    <p class="text-center mt-3 small text-muted">
+                                        <i class="fas fa-graduation-cap me-1"></i>
+                                        Find your perfect internship opportunity
+                                    </p>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-grid">
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                                        </button>
+                                        <a href="{{ url_for('google_auth', type='company') }}" class="btn btn-outline-danger btn-lg">
+                                            <i class="fab fa-google me-2"></i>
+                                            Register as Company
+                                        </a>
+                                    </div>
+                                    <p class="text-center mt-3 small text-muted">
+                                        <i class="fas fa-building me-1"></i>
+                                        Find the best talent for your internships
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <p class="small text-success">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Fast, secure, one-click registration with your Google account
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="alert alert-info border-0" style="background: var(--glass-bg); backdrop-filter: blur(8px);">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-info-circle me-3 text-info"></i>
+                                    <div>
+                                        <strong>Returning user?</strong> Simply click your account type above to sign in with Google.
+                                        <br><small class="text-muted">Your previous data will be automatically linked to your Google account.</small>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,31 +114,31 @@
             <h3 class="text-center mb-4">How It Works</h3>
             <div class="row g-4">
                 <div class="col-md-3 text-center">
-                    <div class="bg-info rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <span class="text-white fw-bold">1</span>
+                    <div class="step-number bg-info text-white">
+                        <span>1</span>
                     </div>
-                    <h6>Register & Create Profile</h6>
+                    <h6 class="fw-bold">Register & Create Profile</h6>
                     <p class="small text-muted">Students and companies create detailed profiles with skills, preferences, and requirements.</p>
                 </div>
                 <div class="col-md-3 text-center">
-                    <div class="bg-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <span class="text-white fw-bold">2</span>
+                    <div class="step-number bg-success text-white">
+                        <span>2</span>
                     </div>
-                    <h6>AI Analysis</h6>
+                    <h6 class="fw-bold">AI Analysis</h6>
                     <p class="small text-muted">Our AI algorithms analyze compatibility based on multiple criteria and fairness factors.</p>
                 </div>
                 <div class="col-md-3 text-center">
-                    <div class="bg-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <span class="text-white fw-bold">3</span>
+                    <div class="step-number bg-warning text-white">
+                        <span>3</span>
                     </div>
-                    <h6>Smart Matching</h6>
+                    <h6 class="fw-bold">Smart Matching</h6>
                     <p class="small text-muted">Generate personalized matches with detailed compatibility scores and rankings.</p>
                 </div>
                 <div class="col-md-3 text-center">
-                    <div class="bg-danger rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <span class="text-white fw-bold">4</span>
+                    <div class="step-number bg-danger text-white">
+                        <span>4</span>
                     </div>
-                    <h6>Connect & Apply</h6>
+                    <h6 class="fw-bold">Connect & Apply</h6>
                     <p class="small text-muted">Students view their best matches and connect with companies for internship opportunities.</p>
                 </div>
             </div>
