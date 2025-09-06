@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_migrate import Migrate 
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -32,6 +33,7 @@ with app.app_context():
     # Import models to ensure tables are created
     import models
     db.create_all()
+    migrate = Migrate(app, db) 
     
     # Import routes
     import routes
