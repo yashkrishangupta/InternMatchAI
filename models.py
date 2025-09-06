@@ -7,7 +7,9 @@ class Student(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=True)  # Optional for Google auth
+    google_id = db.Column(db.String(100), unique=True, nullable=True)  # Google OAuth ID
+    profile_picture = db.Column(db.String(255), nullable=True)  # Google profile picture
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15))
     
@@ -52,7 +54,9 @@ class Company(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=True)  # Optional for Google auth
+    google_id = db.Column(db.String(100), unique=True, nullable=True)  # Google OAuth ID
+    profile_picture = db.Column(db.String(255), nullable=True)  # Google profile picture
     name = db.Column(db.String(200), nullable=False)
     
     # Company Information
