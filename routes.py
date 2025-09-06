@@ -524,45 +524,45 @@ def oauth_callback():
         session.pop('oauth_state', None)
         session.pop('oauth_user_type', None)
 
-@app.route('/complete-student-profile', methods=['GET', 'POST'])
-def complete_student_profile():
-    """Complete student profile after Google OAuth"""
-    if session.get('user_type') != 'student' or not session.get('google_auth'):
-        return redirect(url_for('index'))
+# @app.route('/complete-student-profile', methods=['GET', 'POST'])
+# def complete_student_profile():
+#     """Complete student profile after Google OAuth"""
+#     if session.get('user_type') != 'student' or not session.get('google_auth'):
+#         return redirect(url_for('index'))
     
-    student = Student.query.get(session['user_id'])
-    if not student:
-        return redirect(url_for('index'))
+#     student = Student.query.get(session['user_id'])
+#     if not student:
+#         return redirect(url_for('index'))
     
-    if request.method == 'POST':
-        try:
-            # Update student profile with additional information
-            student.phone = request.form.get('phone')
-            student.institution = request.form.get('institution')
-            student.course = request.form.get('course')
-            student.year_of_study = request.form.get('year_of_study', type=int)
-            student.cgpa = request.form.get('cgpa', type=float)
-            student.technical_skills = request.form.get('technical_skills')
-            student.soft_skills = request.form.get('soft_skills')
-            student.sector_interests = request.form.get('sector_interests')
-            student.preferred_locations = request.form.get('preferred_locations')
-            student.current_location = request.form.get('current_location')
-            student.social_category = request.form.get('social_category')
-            student.district_type = request.form.get('district_type')
-            student.home_district = request.form.get('home_district')
-            student.previous_internships = request.form.get('previous_internships', type=int, default=0)
-            student.pm_scheme_participant = request.form.get('pm_scheme_participant') == 'on'
+#     if request.method == 'POST':
+#         try:
+#             # Update student profile with additional information
+#             student.phone = request.form.get('phone')
+#             student.institution = request.form.get('institution')
+#             student.course = request.form.get('course')
+#             student.year_of_study = request.form.get('year_of_study', type=int)
+#             student.cgpa = request.form.get('cgpa', type=float)
+#             student.technical_skills = request.form.get('technical_skills')
+#             student.soft_skills = request.form.get('soft_skills')
+#             student.sector_interests = request.form.get('sector_interests')
+#             student.preferred_locations = request.form.get('preferred_locations')
+#             student.current_location = request.form.get('current_location')
+#             student.social_category = request.form.get('social_category')
+#             student.district_type = request.form.get('district_type')
+#             student.home_district = request.form.get('home_district')
+#             student.previous_internships = request.form.get('previous_internships', type=int, default=0)
+#             student.pm_scheme_participant = request.form.get('pm_scheme_participant') == 'on'
             
-            db.session.commit()
-            flash('Profile completed successfully!', 'success')
-            return redirect(url_for('student_dashboard'))
+#             db.session.commit()
+#             flash('Profile completed successfully!', 'success')
+#             return redirect(url_for('student_dashboard'))
             
-        except Exception as e:
-            logging.error(f"Error completing student profile: {e}")
-            flash('Failed to complete profile. Please try again.', 'error')
-            db.session.rollback()
+#         except Exception as e:
+#             logging.error(f"Error completing student profile: {e}")
+#             flash('Failed to complete profile. Please try again.', 'error')
+#             db.session.rollback()
     
-    return render_template('complete_student_profile.html', student=student)
+#     return render_template('complete_student_profile.html', student=student)
 
 @app.route('/complete-company-profile', methods=['GET', 'POST'])
 def complete_company_profile():
