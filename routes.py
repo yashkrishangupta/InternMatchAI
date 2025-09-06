@@ -14,23 +14,30 @@ def index():
 
 @app.route('/profile')
 def profile():
-    user_email = session.get('user_email')
-    if not user_email:
-        return redirect(url_for('login'))
-    
-    student = Student.query.filter_by(email=user_email).first()
+    if session.get('user_type') != 'student':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+
+    student = Student.query.get(session.get('user_id'))
     if not student:
         flash("Student not found.", "danger")
         return redirect(url_for('index'))
-    
+
     completeness_score, missing_fields = student.calculate_profile_completeness()
-    
+
+    # if completeness_score < 100:
+    #     flash('Please complete your profile to access all features.', 'info')
+    #     # Redirect to the same "complete profile" form, prefilled
+    #     return redirect(url_for('complete_student_profile'))
+
+    # Profile complete → show profile view
     return render_template(
         'student_profile_view.html',
         student=student,
         completeness_score=completeness_score,
         missing_fields=missing_fields
-     )
+    )
+
 
 
 @app.route('/student/register', methods=['GET', 'POST'])
