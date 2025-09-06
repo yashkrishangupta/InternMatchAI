@@ -473,8 +473,9 @@ def oauth_callback():
             return redirect(url_for(f"{user_type}_dashboard"))
 
         else:
-            flash(f'Authentication failed: {result}', 'error')
+            flash('Authentication failed. Please try again.', 'error')
             return redirect(url_for('index'))
+
             
     except Exception as e:
         logging.error(f"OAuth callback error: {e}")
