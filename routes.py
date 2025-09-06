@@ -451,24 +451,27 @@ def oauth_callback():
             return redirect(url_for('index'))
         
         # Handle login/registration
-        success, result = handle_google_login(user_info, user_type)
+        success, user = handle_google_login(user_info, user_type)
         
         if success:
-            user = result
-            if hasattr(user, 'institution') and not user.institution:
-                # New student needs to complete profile
-                flash('Welcome! Please complete your profile to get started.', 'info')
+            session['user_type'] = user_type
+            session['user_id'] = user.id
+            session['google_auth'] = True  # mark as logged in via Google
+        
+            # If student and profile incomplete
+            if user_type == "student" and not user.institution:
+                flash('Welcome! Please complete your profile.', 'info')
                 return redirect(url_for('complete_student_profile'))
-            elif hasattr(user, 'industry_sector') and not user.industry_sector:
-                # New company needs to complete profile
-                flash('Welcome! Please complete your company profile to get started.', 'info')
+        
+            # If company and profile incomplete
+            if user_type == "company" and not user.industry_sector:
+                flash('Welcome! Please complete your company profile.', 'info')
                 return redirect(url_for('complete_company_profile'))
-            else:
-                flash(f'Welcome back, {user.name}!', 'success')
-                if user_type == 'student':
-                    return redirect(url_for('student_dashboard'))
-                else:
-                    return redirect(url_for('company_dashboard'))
+        
+            # Otherwise → dashboard
+            flash(f"Welcome back, {user.name}!", "success")
+            return redirect(url_for(f"{user_type}_dashboard"))
+
         else:
             flash(f'Authentication failed: {result}', 'error')
             return redirect(url_for('index'))
