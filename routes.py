@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from app import app, db
 from models import Student, Company, Internship, Match, Application
 from matching_engine import InternshipMatchingEngine
+from oauth import create_google_flow, handle_google_login, get_google_user_info
 import logging
 
 matching_engine = InternshipMatchingEngine()
@@ -395,3 +396,160 @@ def not_found(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
+
+# Google OAuth routes
+@app.route('/auth/google')
+def google_auth():
+    """Initiate Google OAuth"""
+    user_type = request.args.get('type', 'student')
+    if user_type not in ['student', 'company']:
+        flash('Invalid user type', 'error')
+        return redirect(url_for('index'))
+    
+    # Store user type in session for callback
+    session['oauth_user_type'] = user_type
+    
+    flow = create_google_flow()
+    if not flow:
+        flash('Google authentication is not configured. Please contact administrator.', 'error')
+        return redirect(url_for('index'))
+    
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='select_account'
+    )
+    
+    session['oauth_state'] = state
+    return redirect(authorization_url)
+
+@app.route('/oauth2callback')
+def oauth_callback():
+    """Handle Google OAuth callback"""
+    # Verify state parameter
+    if 'oauth_state' not in session or request.args.get('state') != session['oauth_state']:
+        flash('Invalid authentication state', 'error')
+        return redirect(url_for('index'))
+    
+    user_type = session.get('oauth_user_type', 'student')
+    
+    flow = create_google_flow()
+    if not flow:
+        flash('Authentication configuration error', 'error')
+        return redirect(url_for('index'))
+    
+    try:
+        # Get the authorization code and exchange for tokens
+        flow.fetch_token(authorization_response=request.url)
+        
+        # Get user info from Google
+        credentials = flow.credentials
+        user_info = get_google_user_info(credentials.token)
+        
+        if not user_info:
+            flash('Failed to get user information from Google', 'error')
+            return redirect(url_for('index'))
+        
+        # Handle login/registration
+        success, result = handle_google_login(user_info, user_type)
+        
+        if success:
+            user = result
+            if hasattr(user, 'institution') and not user.institution:
+                # New student needs to complete profile
+                flash('Welcome! Please complete your profile to get started.', 'info')
+                return redirect(url_for('complete_student_profile'))
+            elif hasattr(user, 'industry_sector') and not user.industry_sector:
+                # New company needs to complete profile
+                flash('Welcome! Please complete your company profile to get started.', 'info')
+                return redirect(url_for('complete_company_profile'))
+            else:
+                flash(f'Welcome back, {user.name}!', 'success')
+                if user_type == 'student':
+                    return redirect(url_for('student_dashboard'))
+                else:
+                    return redirect(url_for('company_dashboard'))
+        else:
+            flash(f'Authentication failed: {result}', 'error')
+            return redirect(url_for('index'))
+            
+    except Exception as e:
+        logging.error(f"OAuth callback error: {e}")
+        flash('Authentication failed. Please try again.', 'error')
+        return redirect(url_for('index'))
+    
+    finally:
+        # Clean up session
+        session.pop('oauth_state', None)
+        session.pop('oauth_user_type', None)
+
+@app.route('/complete-student-profile', methods=['GET', 'POST'])
+def complete_student_profile():
+    """Complete student profile after Google OAuth"""
+    if session.get('user_type') != 'student' or not session.get('google_auth'):
+        return redirect(url_for('index'))
+    
+    student = Student.query.get(session['user_id'])
+    if not student:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        try:
+            # Update student profile with additional information
+            student.phone = request.form.get('phone')
+            student.institution = request.form.get('institution')
+            student.course = request.form.get('course')
+            student.year_of_study = request.form.get('year_of_study', type=int)
+            student.cgpa = request.form.get('cgpa', type=float)
+            student.technical_skills = request.form.get('technical_skills')
+            student.soft_skills = request.form.get('soft_skills')
+            student.sector_interests = request.form.get('sector_interests')
+            student.preferred_locations = request.form.get('preferred_locations')
+            student.current_location = request.form.get('current_location')
+            student.social_category = request.form.get('social_category')
+            student.district_type = request.form.get('district_type')
+            student.home_district = request.form.get('home_district')
+            student.previous_internships = request.form.get('previous_internships', type=int, default=0)
+            student.pm_scheme_participant = request.form.get('pm_scheme_participant') == 'on'
+            
+            db.session.commit()
+            flash('Profile completed successfully!', 'success')
+            return redirect(url_for('student_dashboard'))
+            
+        except Exception as e:
+            logging.error(f"Error completing student profile: {e}")
+            flash('Failed to complete profile. Please try again.', 'error')
+            db.session.rollback()
+    
+    return render_template('complete_student_profile.html', student=student)
+
+@app.route('/complete-company-profile', methods=['GET', 'POST'])
+def complete_company_profile():
+    """Complete company profile after Google OAuth"""
+    if session.get('user_type') != 'company' or not session.get('google_auth'):
+        return redirect(url_for('index'))
+    
+    company = Company.query.get(session['user_id'])
+    if not company:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        try:
+            # Update company profile with additional information
+            company.industry_sector = request.form.get('industry_sector')
+            company.company_size = request.form.get('company_size')
+            company.location = request.form.get('location')
+            company.description = request.form.get('description')
+            company.contact_person = request.form.get('contact_person')
+            company.contact_phone = request.form.get('contact_phone')
+            
+            db.session.commit()
+            flash('Profile completed successfully!', 'success')
+            return redirect(url_for('company_dashboard'))
+            
+        except Exception as e:
+            logging.error(f"Error completing company profile: {e}")
+            flash('Failed to complete profile. Please try again.', 'error')
+            db.session.rollback()
+    
+    return render_template('complete_company_profile.html', company=company)
