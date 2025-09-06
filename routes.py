@@ -25,7 +25,7 @@ def profile():
     
     completeness_score, missing_fields = student.calculate_profile_completeness()
     
-     return render_template(
+    return render_template(
         'student_profile_view.html',
         student=student,
         completeness_score=completeness_score,
