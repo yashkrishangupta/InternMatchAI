@@ -48,12 +48,12 @@ def student_register():
             # Validate required fields
             if not all([email, password, name, institution, course]):
                 flash('Please fill all required fields', 'error')
-                return render_template('student_register.html')
+                return render_template('complete_student_profile.html')
             
             # Check if email exists
             if Student.query.filter_by(email=email).first():
                 flash('Email already registered', 'error')
-                return render_template('student_register.html')
+                return render_template('complete_student_profile.html')
             
             # Create new student
             student = Student(
@@ -83,7 +83,7 @@ def student_register():
             session['user_type'] = 'student'
             session['user_id'] = student.id
             
-            flash('Registration successful!', 'success')
+            flash('Profile completion successful!', 'success')
             return redirect(url_for('student_dashboard'))
             
         except Exception as e:
@@ -91,7 +91,7 @@ def student_register():
             flash('Registration failed. Please try again.', 'error')
             db.session.rollback()
     
-    return render_template('student_register.html')
+    return render_template('complete_student_profile.html')
 
 @app.route('/company/register', methods=['GET', 'POST'])
 def company_register():
