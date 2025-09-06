@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Company Profile - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-gradient text-white">
+                <div class="d-flex align-items-center">
+                    {% if company.profile_picture %}
+                        <img src="{{ company.profile_picture }}" alt="Profile" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                    {% endif %}
+                    <div>
+                        <h4 class="mb-0">Welcome, {{ company.name }}!</h4>
+                        <p class="mb-0 opacity-75">Complete your company profile to start posting internships</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="needs-validation" novalidate>
+                    <div class="row g-4">
+                        <!-- Company Information -->
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-building me-2 text-primary"></i>Company Information
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="industry_sector" class="form-label">Industry Sector <span class="text-danger">*</span></label>
+                            <select class="form-select" id="industry_sector" name="industry_sector" required>
+                                <option value="">Select Industry</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Consulting">Consulting</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Media">Media</option>
+                                <option value="Non-profit">Non-profit</option>
+                                <option value="Government">Government</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="company_size" class="form-label">Company Size</label>
+                            <select class="form-select" id="company_size" name="company_size">
+                                <option value="">Select Size</option>
+                                <option value="Startup (1-10)">Startup (1-10 employees)</option>
+                                <option value="Small (11-50)">Small (11-50 employees)</option>
+                                <option value="Medium (51-200)">Medium (51-200 employees)</option>
+                                <option value="Large (201-1000)">Large (201-1000 employees)</option>
+                                <option value="Enterprise (1000+)">Enterprise (1000+ employees)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="location" class="form-label">Company Location</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="City, State/Country">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="contact_phone" class="form-label">Contact Phone</label>
+                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
+                                   placeholder="+1 (555) 123-4567">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="contact_person" class="form-label">Primary Contact Person</label>
+                            <input type="text" class="form-control" id="contact_person" name="contact_person" 
+                                   placeholder="Full name of HR/Hiring manager">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="description" class="form-label">Company Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" 
+                                      placeholder="Tell us about your company, mission, values, and what makes it a great place for interns..."></textarea>
+                            <div class="form-text">This will help students understand your company culture and opportunities</div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Next Steps:</strong> After completing your profile, you'll be able to create internship listings and view applications from qualified students.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-check me-2"></i>Complete Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+</style>
+{% endblock %}
