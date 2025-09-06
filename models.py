@@ -50,74 +50,74 @@ class Student(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def calculate_profile_completeness(self):
-    fields = {
-        'name': 10,
-        'email': 10,
-        'phone': 10,
-        'institution': 10,
-        'course': 10,
-        'year_of_study': 5,
-        'cgpa': 5,
-        'technical_skills': 10,
-        'soft_skills': 5,
-        'sector_interests': 10,
-        'current_location': 5,
-        'preferred_locations': 5,
-        'social_category': 3,
-        'district_type': 3,
-        'home_district': 4,
-        'previous_internships': 5,
-        'pm_scheme_participant': 5,
-    }
+        fields = {
+            'name': 10,
+            'email': 10,
+            'phone': 10,
+            'institution': 10,
+            'course': 10,
+            'year_of_study': 5,
+            'cgpa': 5,
+            'technical_skills': 10,
+            'soft_skills': 5,
+            'sector_interests': 10,
+            'current_location': 5,
+            'preferred_locations': 5,
+            'social_category': 3,
+            'district_type': 3,
+            'home_district': 4,
+            'previous_internships': 5,
+            'pm_scheme_participant': 5,
+        }   
+    
+        # Labels for missing fields
+        labels = {
+            'name': 'Full Name',
+            'email': 'Email',
+            'phone': 'Phone Number',
+            'institution': 'Institution',
+            'course': 'Course/Degree',
+            'year_of_study': 'Year of Study',
+            'cgpa': 'CGPA/Percentage',
+            'technical_skills': 'Technical Skills',
+            'soft_skills': 'Soft Skills',
+            'sector_interests': 'Sector Interests',
+            'current_location': 'Current Location',
+            'preferred_locations': 'Preferred Locations',
+            'social_category': 'Social Category',
+            'district_type': 'District Type',
+            'home_district': 'Home District',
+            'previous_internships': 'Number of Previous Internships',
+            'pm_scheme_participant': 'PM Scheme Participant',
+        }   
+    
+        completeness_score = 0
+        missing_fields = []
 
-    # Labels for missing fields
-    labels = {
-        'name': 'Full Name',
-        'email': 'Email',
-        'phone': 'Phone Number',
-        'institution': 'Institution',
-        'course': 'Course/Degree',
-        'year_of_study': 'Year of Study',
-        'cgpa': 'CGPA/Percentage',
-        'technical_skills': 'Technical Skills',
-        'soft_skills': 'Soft Skills',
-        'sector_interests': 'Sector Interests',
-        'current_location': 'Current Location',
-        'preferred_locations': 'Preferred Locations',
-        'social_category': 'Social Category',
-        'district_type': 'District Type',
-        'home_district': 'Home District',
-        'previous_internships': 'Number of Previous Internships',
-        'pm_scheme_participant': 'PM Scheme Participant',
-    }
-
-    completeness_score = 0
-    missing_fields = []
-
-    for field, weight in fields.items():
-        value = getattr(self, field)
-        # Special handling for Boolean fields
-        if field == 'pm_scheme_participant':
-            if value is not None:
+        for field, weight in fields.items():
+            value = getattr(self, field)
+            # Special handling for Boolean fields
+            if field == 'pm_scheme_participant':
+                if value is not None:
+                    completeness_score += weight
+                else:
+                    missing_fields.append(labels[field])
+            # Special handling for integers like previous_internships
+            elif field == 'previous_internships':
+                if value is not None:
+                    completeness_score += weight
+                else:
+                    missing_fields.append(labels[field])
+            # Normal handling
+            elif value:
                 completeness_score += weight
             else:
                 missing_fields.append(labels[field])
-        # Special handling for integers like previous_internships
-        elif field == 'previous_internships':
-            if value is not None:
-                completeness_score += weight
-            else:
-                missing_fields.append(labels[field])
-        # Normal handling
-        elif value:
-            completeness_score += weight
-        else:
-            missing_fields.append(labels[field])
-
-    # Cap completeness at 100%
-    completeness_score = min(completeness_score, 100)
-
-    return completeness_score, missing_fields
+    
+        # Cap completeness at 100%
+        completeness_score = min(completeness_score, 100)
+    
+        return completeness_score, missing_fields
 
 
 class Company(db.Model):
