@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="mb-0">
-                    <i class="fas fa-user-graduate me-2"></i>Student Registration
+                    <i class="fas fa-user-graduate me-2"></i>Student Profile
                 </h3>
             </div>
             <div class="card-body">
@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email *</label>
-                            <input type="email" class="form-control" name="email" required>
+                            <input type="email" name="email" value="{{ student.email }}" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Password *</label>
@@ -148,7 +148,7 @@
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-user-plus me-2"></i>Register
+                            <i class="fas fa-user-plus me-2"></i>Save
                         </button>
                     </div>
                 </form>
