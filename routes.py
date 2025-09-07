@@ -502,3 +502,22 @@ def complete_company_profile():
             db.session.rollback()
     
     return render_template('complete_company_profile.html', company=company, is_editing=True)
+
+@app.route('/admin/generate-all-matches')
+def generate_all_matches():
+    """Admin function to generate matches for all students"""
+    try:
+        total_matches = matching_engine.generate_all_matches()
+        flash(f'Generated {total_matches} total matches!', 'success')
+        
+    except Exception as e:
+        logging.error(f"Error generating all matches: {e}")
+        flash('Failed to generate matches. Please try again.', 'error')
+    
+    return redirect(url_for('index'))
+
+@app.route('/internship/<int:internship_id>')
+def view_internship(internship_id):
+    """View internship details"""
+    internship = Internship.query.get_or_404(internship_id)
+    return render_template('internship_details.html', internship=internship)
