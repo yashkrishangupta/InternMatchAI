@@ -24,12 +24,10 @@
                             <label class="form-label">Email *</label>
                             <input type="email" class="form-control" name="email" value="{{ student.email or '' }}" readonly>
                         </div>
-                        {% if not is_editing %}
                         <div class="col-md-6">
                             <label class="form-label">Password *</label>
                             <input type="password" class="form-control" name="password" required>
                         </div>
-                        {% endif %}
                         <div class="col-md-6">
                             <label class="form-label">Phone Number</label>
                             <input type="tel" class="form-control" name="phone" value="{{ student.phone or '' }}">
