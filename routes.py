@@ -9,10 +9,28 @@ matching_engine = InternshipMatchingEngine()
 
 @app.route('/')
 def index():
-    """Home page with registration options"""
+    """Home page with registration options or redirect to dashboard if already logged in"""
+    # Check if user is already logged in
+    if session.get('user_type') and session.get('user_id'):
+        user_type = session.get('user_type')
+        user_id = session.get('user_id')
+        
+        # Verify the user still exists in the database
+        if user_type == 'student':
+            user = Student.query.get(user_id)
+            if user:
+                return redirect(url_for('student_dashboard'))
+        elif user_type == 'company':
+            user = Company.query.get(user_id)
+            if user:
+                return redirect(url_for('company_dashboard'))
+        
+        # If user doesn't exist, clear the session
+        session.clear()
+    
     return render_template('index.html')
 
-@app.route('/profile')
+@app.route('/student/profile')
 def profile():
     if session.get('user_type') != 'student':
         flash('Access denied.', 'danger')
@@ -25,6 +43,12 @@ def profile():
 
     completeness_score, missing_fields = student.calculate_profile_completeness()
 
+    # if completeness_score < 100:
+    #     flash('Please complete your profile to access all features.', 'info')
+    #     # Redirect to the same "complete profile" form, prefilled
+    #     return redirect(url_for('complete_student_profile'))
+
+    # Profile complete → show profile view
     return render_template(
         'student_profile_view.html',
         student=student,
@@ -51,11 +75,6 @@ def complete_student_profile():
             student.phone = request.form.get('phone') or student.phone
             student.institution = request.form.get('institution') or student.institution
             student.course = request.form.get('course') or student.course
-
-            password = request.form.get('password')
-            if password:
-                student.set_password(password)
-
             
             # Handle numeric fields properly
             year_str = request.form.get('year_of_study')
@@ -483,23 +502,3 @@ def complete_company_profile():
             db.session.rollback()
     
     return render_template('complete_company_profile.html', company=company, is_editing=True)
-
-@app.route('/internship/<int:internship_id>')
-def view_internship(internship_id):
-    """View internship details"""
-    internship = Internship.query.get_or_404(internship_id)
-    return render_template('internship_details.html', internship=internship)
-
-
-@app.route('/admin/generate-all-matches')
-def generate_all_matches():
-    """Admin function to generate matches for all students"""
-    try:
-        total_matches = matching_engine.generate_all_matches()
-        flash(f'Generated {total_matches} total matches!', 'success')
-        
-    except Exception as e:
-        logging.error(f"Error generating all matches: {e}")
-        flash('Failed to generate matches. Please try again.', 'error')
-    
-    return redirect(url_for('index'))
