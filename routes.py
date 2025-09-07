@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from app import app, db
-from models import Student, Company, Internship, Match, Application
+from models import Student, Department, Admin, Internship, Match, Application
 from matching_engine import InternshipMatchingEngine
 from oauth import create_google_flow, handle_google_login, get_google_user_info
 import logging
@@ -20,10 +20,14 @@ def index():
             user = Student.query.get(user_id)
             if user:
                 return redirect(url_for('student_dashboard'))
-        elif user_type == 'company':
-            user = Company.query.get(user_id)
+        elif user_type == 'department':
+            user = Department.query.get(user_id)
             if user:
-                return redirect(url_for('company_dashboard'))
+                return redirect(url_for('department_dashboard'))
+        elif user_type == 'admin':
+            user = Admin.query.get(user_id)
+            if user:
+                return redirect(url_for('admin_dashboard'))
         
         # If user doesn't exist, clear the session
         session.clear()
@@ -42,13 +46,7 @@ def profile():
         return redirect(url_for('index'))
 
     completeness_score, missing_fields = student.calculate_profile_completeness()
-
-    # if completeness_score < 100:
-    #     flash('Please complete your profile to access all features.', 'info')
-    #     # Redirect to the same "complete profile" form, prefilled
-    #     return redirect(url_for('complete_student_profile'))
-
-    # Profile complete → show profile view
+    
     return render_template(
         'student_profile_view.html',
         student=student,
@@ -123,7 +121,7 @@ def complete_student_profile():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Login for both students and companies"""
+    """Login for students, departments, and admins"""
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -131,8 +129,10 @@ def login():
         
         if user_type == 'student':
             user = Student.query.filter_by(email=email).first()
-        elif user_type == 'company':
-            user = Company.query.filter_by(email=email).first()
+        elif user_type == 'department':
+            user = Department.query.filter_by(email=email).first()
+        elif user_type == 'admin':
+            user = Admin.query.filter_by(email=email).first()
         else:
             flash('Invalid user type', 'error')
             return redirect(url_for('index'))
@@ -143,8 +143,10 @@ def login():
             
             if user_type == 'student':
                 return redirect(url_for('student_dashboard'))
-            else:
-                return redirect(url_for('company_dashboard'))
+            elif user_type == 'department':
+                return redirect(url_for('department_dashboard'))
+            else:  # admin
+                return redirect(url_for('admin_dashboard'))
         else:
             flash('Invalid credentials', 'error')
     
@@ -174,46 +176,46 @@ def student_dashboard():
     
     return render_template('student_dashboard.html', student=student, matches=matches)
 
-@app.route('/company/profile')
-def company_profile():
-    """Company profile view page"""
-    if session.get('user_type') != 'company':
+@app.route('/department/profile')
+def department_profile():
+    """Department profile view page"""
+    if session.get('user_type') != 'department':
         flash('Access denied.', 'danger')
         return redirect(url_for('index'))
 
-    company = Company.query.get(session.get('user_id'))
-    if not company:
-        flash("Company not found.", "danger")
+    department = Department.query.get(session.get('user_id'))
+    if not department:
+        flash("Department not found.", "danger")
         return redirect(url_for('index'))
 
-    completeness_score, missing_fields = company.calculate_profile_completeness()
+    completeness_score, missing_fields = department.calculate_profile_completeness()
 
     return render_template(
-        'company_profile_view.html',
-        company=company,
+        'department_profile_view.html',
+        department=department,
         completeness_score=completeness_score,
         missing_fields=missing_fields
     )
 
-@app.route('/company/dashboard')
-def company_dashboard():
-    """Company dashboard"""
-    if session.get('user_type') != 'company':
+@app.route('/department/dashboard')
+def department_dashboard():
+    """Department dashboard"""
+    if session.get('user_type') != 'department':
         return redirect(url_for('index'))
     
-    company = Company.query.get(session['user_id'])
-    if not company:
+    department = Department.query.get(session['user_id'])
+    if not department:
         return redirect(url_for('index'))
     
-    # Get company's internships
-    internships = Internship.query.filter_by(company_id=company.id).all()
+    # Get department's internships
+    internships = Internship.query.filter_by(department_id=department.id).all()
     
-    return render_template('company_dashboard.html', company=company, internships=internships)
+    return render_template('department_dashboard.html', department=department, internships=internships)
 
 @app.route('/internship/create', methods=['GET', 'POST'])
 def create_internship():
     """Create new internship"""
-    if session.get('user_type') != 'company':
+    if session.get('user_type') != 'department':
         return redirect(url_for('index'))
     
     if request.method == 'POST':
@@ -244,7 +246,7 @@ def create_internship():
             
             # Create new internship
             internship = Internship(
-                company_id=session['user_id'],
+                department_id=session['user_id'],
                 title=title,
                 description=description,
                 sector=sector,
@@ -266,7 +268,7 @@ def create_internship():
             db.session.commit()
             
             flash('Internship created successfully!', 'success')
-            return redirect(url_for('company_dashboard'))
+            return redirect(url_for('department_dashboard'))
             
         except Exception as e:
             logging.error(f"Error creating internship: {e}")
@@ -377,7 +379,13 @@ def internal_error(error):
 def google_auth():
     """Initiate Google OAuth"""
     user_type = request.args.get('type', 'student')
-    if user_type not in ['student', 'company']:
+    
+    # Block Google authentication for departments
+    if user_type == 'department':
+        flash('Google authentication is not available for departments. Please use email/password login.', 'warning')
+        return redirect(url_for('index'))
+        
+    if user_type not in ['student']:
         flash('Invalid user type', 'error')
         return redirect(url_for('index'))
     
@@ -439,11 +447,11 @@ def oauth_callback():
                 if not user.institution or not user.course:
                     flash('Welcome! Please complete your profile to get started.', 'info')
                     return redirect(url_for('complete_student_profile'))
-            elif user_type == "company":
+            elif user_type == "department":
                 # Check if essential profile fields are missing  
-                if not user.industry_sector:
-                    flash('Welcome! Please complete your company profile to start posting internships.', 'info')
-                    return redirect(url_for('complete_company_profile'))
+                if not user.ministry:
+                    flash('Welcome! Please complete your department profile to start posting internships.', 'info')
+                    return redirect(url_for('complete_department_profile'))
         
             # Profile is complete → go to dashboard
             flash(f"Welcome back, {user.name}!", "success")
@@ -464,48 +472,179 @@ def oauth_callback():
         session.pop('oauth_state', None)
         session.pop('oauth_user_type', None)
 
-@app.route('/complete-company-profile', methods=['GET', 'POST'])
-def complete_company_profile():
-    """Complete or edit company profile - works for both Google OAuth and regular users"""
-    if session.get('user_type') != 'company':
+@app.route('/complete-department-profile', methods=['GET', 'POST'])
+def complete_department_profile():
+    """Complete or edit department profile"""
+    if session.get('user_type') != 'department':
         flash('Access denied.', 'danger')
         return redirect(url_for('index'))
     
-    company = Company.query.get(session.get('user_id'))
-    if not company:
-        flash("Company not found.", "danger")
+    department = Department.query.get(session.get('user_id'))
+    if not department:
+        flash("Department not found.", "danger")
         return redirect(url_for('index'))
     
     if request.method == 'POST':
         try:
-            # Update company profile with form data
-            company.name = request.form.get('name') or company.name
-            company.industry_sector = request.form.get('industry_sector') or company.industry_sector
-            company.company_size = request.form.get('company_size') or company.company_size
-            company.location = request.form.get('location') or company.location
-            company.description = request.form.get('description') or company.description
-            company.contact_person = request.form.get('contact_person') or company.contact_person
-            company.contact_phone = request.form.get('contact_phone') or company.contact_phone
+            # Update department profile with form data
+            department.name = request.form.get('name') or department.name
+            department.ministry = request.form.get('ministry') or department.ministry
+            department.department_type = request.form.get('department_type') or department.department_type
+            department.location = request.form.get('location') or department.location
+            department.description = request.form.get('description') or department.description
+            department.contact_person = request.form.get('contact_person') or department.contact_person
+            department.contact_phone = request.form.get('contact_phone') or department.contact_phone
             
             db.session.commit()
             flash('Profile updated successfully!', 'success')
-            
-            # If user came from Google OAuth and essential fields are now filled, go to dashboard
-            if session.get('google_auth') and company.industry_sector:
-                return redirect(url_for('company_dashboard'))
-            else:
-                return redirect(url_for('company_profile'))
+            return redirect(url_for('department_profile'))
             
         except Exception as e:
-            logging.error(f"Error updating company profile: {e}")
+            logging.error(f"Error updating department profile: {e}")
             flash('Failed to update profile. Please try again.', 'error')
             db.session.rollback()
     
-    return render_template('complete_company_profile.html', company=company, is_editing=True)
+    return render_template('complete_department_profile.html', department=department, is_editing=True)
+
+# Admin Routes
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    """Admin dashboard"""
+    if session.get('user_type') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+    
+    admin = Admin.query.get(session['user_id'])
+    if not admin:
+        return redirect(url_for('index'))
+    
+    # Get statistics
+    total_students = Student.query.count()
+    total_departments = Department.query.count()
+    total_internships = Internship.query.count()
+    total_applications = Application.query.count()
+    
+    # Get recent departments
+    recent_departments = Department.query.order_by(Department.created_at.desc()).limit(5).all()
+    
+    return render_template('admin_dashboard.html', 
+                         admin=admin,
+                         total_students=total_students,
+                         total_departments=total_departments,
+                         total_internships=total_internships,
+                         total_applications=total_applications,
+                         recent_departments=recent_departments)
+
+@app.route('/admin/departments', methods=['GET', 'POST'])
+def manage_departments():
+    """Create and manage departments"""
+    if session.get('user_type') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        try:
+            # Create new department
+            email = request.form.get('email')
+            password = request.form.get('password')
+            name = request.form.get('name')
+            ministry = request.form.get('ministry')
+            department_type = request.form.get('department_type')
+            location = request.form.get('location')
+            description = request.form.get('description')
+            contact_person = request.form.get('contact_person')
+            contact_phone = request.form.get('contact_phone')
+            
+            # Check if email already exists
+            existing_dept = Department.query.filter_by(email=email).first()
+            if existing_dept:
+                flash('Email already exists', 'error')
+                return redirect(url_for('manage_departments'))
+            
+            # Create department
+            department = Department(
+                email=email,
+                name=name,
+                ministry=ministry,
+                department_type=department_type,
+                location=location,
+                description=description,
+                contact_person=contact_person,
+                contact_phone=contact_phone,
+                created_by=session['user_id']
+            )
+            department.set_password(password)
+            
+            db.session.add(department)
+            db.session.commit()
+            
+            flash(f'Department "{name}" created successfully!', 'success')
+            
+        except Exception as e:
+            logging.error(f"Error creating department: {e}")
+            flash('Failed to create department. Please try again.', 'error')
+            db.session.rollback()
+    
+    # Get all departments
+    departments = Department.query.order_by(Department.created_at.desc()).all()
+    
+    return render_template('admin_departments.html', departments=departments)
+
+@app.route('/admin/departments/<int:dept_id>/toggle', methods=['POST'])
+def toggle_department_status(dept_id):
+    """Toggle department active status"""
+    if session.get('user_type') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+    
+    department = Department.query.get_or_404(dept_id)
+    department.is_active = not department.is_active
+    
+    try:
+        db.session.commit()
+        status = "activated" if department.is_active else "deactivated"
+        flash(f'Department "{department.name}" {status} successfully!', 'success')
+    except Exception as e:
+        logging.error(f"Error toggling department status: {e}")
+        flash('Failed to update department status.', 'error')
+        db.session.rollback()
+    
+    return redirect(url_for('manage_departments'))
+
+@app.route('/admin/departments/<int:dept_id>/delete', methods=['POST'])
+def delete_department(dept_id):
+    """Delete department"""
+    if session.get('user_type') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+    
+    department = Department.query.get_or_404(dept_id)
+    
+    try:
+        # Check if department has active internships
+        active_internships = Internship.query.filter_by(department_id=dept_id, is_active=True).count()
+        if active_internships > 0:
+            flash(f'Cannot delete department with {active_internships} active internships.', 'error')
+            return redirect(url_for('manage_departments'))
+        
+        db.session.delete(department)
+        db.session.commit()
+        flash(f'Department "{department.name}" deleted successfully!', 'success')
+        
+    except Exception as e:
+        logging.error(f"Error deleting department: {e}")
+        flash('Failed to delete department.', 'error')
+        db.session.rollback()
+    
+    return redirect(url_for('manage_departments'))
 
 @app.route('/admin/generate-all-matches')
 def generate_all_matches():
     """Admin function to generate matches for all students"""
+    if session.get('user_type') != 'admin':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+        
     try:
         total_matches = matching_engine.generate_all_matches()
         flash(f'Generated {total_matches} total matches!', 'success')
@@ -514,7 +653,7 @@ def generate_all_matches():
         logging.error(f"Error generating all matches: {e}")
         flash('Failed to generate matches. Please try again.', 'error')
     
-    return redirect(url_for('index'))
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/internship/<int:internship_id>')
 def view_internship(internship_id):
