@@ -93,13 +93,65 @@
                             </div>
                         </div>
 
+                        <!-- Email/Password Login -->
+                        <div class="mt-4">
+                            <hr class="my-4">
+                            <h5 class="text-center mb-4">
+                                <i class="fas fa-envelope me-2 text-primary"></i>Login with Email & Password
+                            </h5>
+                            
+                            <form method="POST" action="{{ url_for('login') }}">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="user_type" class="form-label">I am a</label>
+                                            <select class="form-select" id="user_type" name="user_type" required>
+                                                <option value="">Choose...</option>
+                                                <option value="student">Student</option>
+                                                <option value="company">Company</option>
+                                            </select>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-0" style="background: var(--glass-bg); backdrop-filter: blur(8px);">
+                                            <div class="card-body text-center">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-user-plus me-2 text-success"></i>New User?
+                                                </h6>
+                                                <p class="card-text small">Don't have an account yet? Use the Google registration buttons above to create your account quickly and securely.</p>
+                                                <div class="mt-3">
+                                                    <p class="small text-muted">
+                                                        <i class="fas fa-shield-alt me-1"></i>
+                                                        Already have an account? Enter your email and password on the left.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
                         <div class="mt-4">
                             <div class="alert alert-info border-0" style="background: var(--glass-bg); backdrop-filter: blur(8px);">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-info-circle me-3 text-info"></i>
                                     <div>
-                                        <strong>Returning user?</strong> Simply click your account type above to sign in with Google.
-                                        <br><small class="text-muted">Your previous data will be automatically linked to your Google account.</small>
+                                        <strong>Choose your preferred method:</strong> Register with Google for quick setup, or login with your email and password if you already have an account.
+                                        <br><small class="text-muted">Your Google account will be automatically linked to your existing profile data.</small>
                                     </div>
                                 </div>
                             </div>
