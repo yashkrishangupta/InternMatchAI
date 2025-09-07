@@ -12,7 +12,7 @@ def index():
     """Home page with registration options"""
     return render_template('index.html')
 
-@app.route('/student/profile')
+@app.route('/profile')
 def profile():
     if session.get('user_type') != 'student':
         flash('Access denied.', 'danger')
