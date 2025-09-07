@@ -18,19 +18,21 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Full Name *</label>
-                            <input type="text" class="form-control" name="name" required>
+                            <input type="text" class="form-control" name="name" value="{{ student.name or '' }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email *</label>
-                            <input type="email" class="form-control" name="email" value="{{ student.email }}" readonly>
+                            <input type="email" class="form-control" name="email" value="{{ student.email or '' }}" readonly>
                         </div>
+                        {% if not is_editing %}
                         <div class="col-md-6">
                             <label class="form-label">Password *</label>
                             <input type="password" class="form-control" name="password" required>
                         </div>
+                        {% endif %}
                         <div class="col-md-6">
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" name="phone">
+                            <input type="tel" class="form-control" name="phone" value="{{ student.phone or '' }}">
                         </div>
                     </div>
 
@@ -39,26 +41,26 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Institution *</label>
-                            <input type="text" class="form-control" name="institution" required>
+                            <input type="text" class="form-control" name="institution" value="{{ student.institution or '' }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Course/Degree *</label>
-                            <input type="text" class="form-control" name="course" required>
+                            <input type="text" class="form-control" name="course" value="{{ student.course or '' }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Year of Study</label>
                             <select class="form-select" name="year_of_study">
                                 <option value="">Select Year</option>
-                                <option value="1">First Year</option>
-                                <option value="2">Second Year</option>
-                                <option value="3">Third Year</option>
-                                <option value="4">Fourth Year</option>
-                                <option value="5">Fifth Year</option>
+                                <option value="1" {{ 'selected' if student.year_of_study == 1 }}>First Year</option>
+                                <option value="2" {{ 'selected' if student.year_of_study == 2 }}>Second Year</option>
+                                <option value="3" {{ 'selected' if student.year_of_study == 3 }}>Third Year</option>
+                                <option value="4" {{ 'selected' if student.year_of_study == 4 }}>Fourth Year</option>
+                                <option value="5" {{ 'selected' if student.year_of_study == 5 }}>Fifth Year</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">CGPA/Percentage</label>
-                            <input type="number" class="form-control" name="cgpa" step="0.01" min="0" max="10">
+                            <input type="number" class="form-control" name="cgpa" step="0.01" min="0" max="10" value="{{ student.cgpa or '' }}">
                         </div>
                     </div>
 
@@ -68,19 +70,19 @@
                         <div class="col-md-6">
                             <label class="form-label">Technical Skills</label>
                             <textarea class="form-control" name="technical_skills" rows="3" 
-                                      placeholder="e.g., Python, Java, Web Development, Data Analysis"></textarea>
+                                      placeholder="e.g., Python, Java, Web Development, Data Analysis">{{ student.technical_skills or '' }}</textarea>
                             <div class="form-text">Separate skills with commas</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Soft Skills</label>
                             <textarea class="form-control" name="soft_skills" rows="3" 
-                                      placeholder="e.g., Communication, Leadership, Problem Solving"></textarea>
+                                      placeholder="e.g., Communication, Leadership, Problem Solving">{{ student.soft_skills or '' }}</textarea>
                             <div class="form-text">Separate skills with commas</div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Sector Interests</label>
                             <textarea class="form-control" name="sector_interests" rows="2" 
-                                      placeholder="e.g., Technology, Finance, Healthcare, Education"></textarea>
+                                      placeholder="e.g., Technology, Finance, Healthcare, Education">{{ student.sector_interests or '' }}</textarea>
                             <div class="form-text">Separate interests with commas</div>
                         </div>
                     </div>
@@ -90,12 +92,12 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Current Location</label>
-                            <input type="text" class="form-control" name="current_location">
+                            <input type="text" class="form-control" name="current_location" value="{{ student.current_location or '' }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Preferred Locations</label>
                             <input type="text" class="form-control" name="preferred_locations" 
-                                   placeholder="e.g., Mumbai, Delhi, Bangalore, Remote">
+                                   placeholder="e.g., Mumbai, Delhi, Bangalore, Remote" value="{{ student.preferred_locations or '' }}">
                             <div class="form-text">Separate locations with commas</div>
                         </div>
                     </div>
@@ -107,24 +109,24 @@
                             <label class="form-label">Social Category</label>
                             <select class="form-select" name="social_category">
                                 <option value="">Select Category</option>
-                                <option value="General">General</option>
-                                <option value="OBC">OBC</option>
-                                <option value="SC">SC</option>
-                                <option value="ST">ST</option>
+                                <option value="General" {{ 'selected' if student.social_category == 'General' }}>General</option>
+                                <option value="OBC" {{ 'selected' if student.social_category == 'OBC' }}>OBC</option>
+                                <option value="SC" {{ 'selected' if student.social_category == 'SC' }}>SC</option>
+                                <option value="ST" {{ 'selected' if student.social_category == 'ST' }}>ST</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">District Type</label>
                             <select class="form-select" name="district_type">
                                 <option value="">Select Type</option>
-                                <option value="Urban">Urban</option>
-                                <option value="Rural">Rural</option>
-                                <option value="Aspirational">Aspirational District</option>
+                                <option value="Urban" {{ 'selected' if student.district_type == 'Urban' }}>Urban</option>
+                                <option value="Rural" {{ 'selected' if student.district_type == 'Rural' }}>Rural</option>
+                                <option value="Aspirational" {{ 'selected' if student.district_type == 'Aspirational' }}>Aspirational District</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Home District</label>
-                            <input type="text" class="form-control" name="home_district">
+                            <input type="text" class="form-control" name="home_district" value="{{ student.home_district or '' }}">
                         </div>
                     </div>
 
@@ -133,11 +135,11 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Number of Previous Internships</label>
-                            <input type="number" class="form-control" name="previous_internships" min="0" value="0">
+                            <input type="number" class="form-control" name="previous_internships" min="0" value="{{ student.previous_internships or 0 }}">
                         </div>
                         <div class="col-md-6 d-flex align-items-end">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="pm_scheme_participant">
+                                <input class="form-check-input" type="checkbox" name="pm_scheme_participant" {{ 'checked' if student.pm_scheme_participant }}>
                                 <label class="form-check-label">
                                     Previous PM Scheme Participant
                                 </label>
