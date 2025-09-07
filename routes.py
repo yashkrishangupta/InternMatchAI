@@ -25,101 +25,12 @@ def profile():
 
     completeness_score, missing_fields = student.calculate_profile_completeness()
 
-    # if completeness_score < 100:
-    #     flash('Please complete your profile to access all features.', 'info')
-    #     # Redirect to the same "complete profile" form, prefilled
-    #     return redirect(url_for('complete_student_profile'))
-
-    # Profile complete → show profile view
     return render_template(
         'student_profile_view.html',
         student=student,
         completeness_score=completeness_score,
         missing_fields=missing_fields
     )
-
-
-
-@app.route('/student/register', methods=['GET', 'POST'])
-def student_register():
-    """Student registration"""
-    if request.method == 'POST':
-        try:
-            # Get form data
-            email = request.form.get('email')
-            password = request.form.get('password')
-            name = request.form.get('name')
-            phone = request.form.get('phone')
-            institution = request.form.get('institution')
-            course = request.form.get('course')
-            year_of_study = request.form.get('year_of_study', type=int)
-            cgpa = request.form.get('cgpa', type=float)
-            
-            # Skills and interests
-            technical_skills = request.form.get('technical_skills')
-            soft_skills = request.form.get('soft_skills')
-            sector_interests = request.form.get('sector_interests')
-            
-            # Location
-            preferred_locations = request.form.get('preferred_locations')
-            current_location = request.form.get('current_location')
-            
-            # Affirmative action data
-            social_category = request.form.get('social_category')
-            district_type = request.form.get('district_type')
-            home_district = request.form.get('home_district')
-            
-            # Previous participation
-            previous_internships = request.form.get('previous_internships', type=int, default=0)
-            pm_scheme_participant = request.form.get('pm_scheme_participant') == 'on'
-            
-            # Validate required fields
-            if not all([email, password, name, institution, course]):
-                flash('Please fill all required fields', 'error')
-                return render_template('complete_student_profile.html')
-            
-            # Check if email exists
-            if Student.query.filter_by(email=email).first():
-                flash('Email already registered', 'error')
-                return render_template('complete_student_profile.html')
-            
-            # Create new student
-            student = Student(
-                email=email,
-                name=name,
-                phone=phone,
-                institution=institution,
-                course=course,
-                year_of_study=year_of_study,
-                cgpa=cgpa,
-                technical_skills=technical_skills,
-                soft_skills=soft_skills,
-                sector_interests=sector_interests,
-                preferred_locations=preferred_locations,
-                current_location=current_location,
-                social_category=social_category,
-                district_type=district_type,
-                home_district=home_district,
-                previous_internships=previous_internships,
-                pm_scheme_participant=pm_scheme_participant
-            )
-            student.set_password(password)
-            
-            db.session.add(student)
-            db.session.commit()
-            
-            session['user_type'] = 'student'
-            session['user_id'] = student.id
-            
-            flash('Profile completion successful!', 'success')
-            return redirect(url_for('student_dashboard'))
-            
-        except Exception as e:
-            logging.error(f"Error in student registration: {e}")
-            flash('Registration failed. Please try again.', 'error')
-            db.session.rollback()
-    
-    return render_template('complete_student_profile.html')
 
 @app.route('/complete_student_profile', methods=['GET', 'POST'])
 def complete_student_profile():
@@ -185,62 +96,6 @@ def complete_student_profile():
             db.session.rollback()
 
     return render_template('complete_student_profile.html', student=student, is_editing=True)
-
-
-@app.route('/company/register', methods=['GET', 'POST'])
-def company_register():
-    """Company registration"""
-    if request.method == 'POST':
-        try:
-            # Get form data
-            email = request.form.get('email')
-            password = request.form.get('password')
-            name = request.form.get('name')
-            industry_sector = request.form.get('industry_sector')
-            company_size = request.form.get('company_size')
-            location = request.form.get('location')
-            description = request.form.get('description')
-            contact_person = request.form.get('contact_person')
-            contact_phone = request.form.get('contact_phone')
-            
-            # Validate required fields
-            if not all([email, password, name, industry_sector]):
-                flash('Please fill all required fields', 'error')
-                return render_template('company_register.html')
-            
-            # Check if email exists
-            if Company.query.filter_by(email=email).first():
-                flash('Email already registered', 'error')
-                return render_template('company_register.html')
-            
-            # Create new company
-            company = Company(
-                email=email,
-                name=name,
-                industry_sector=industry_sector,
-                company_size=company_size,
-                location=location,
-                description=description,
-                contact_person=contact_person,
-                contact_phone=contact_phone
-            )
-            company.set_password(password)
-            
-            db.session.add(company)
-            db.session.commit()
-            
-            session['user_type'] = 'company'
-            session['user_id'] = company.id
-            
-            flash('Registration successful!', 'success')
-            return redirect(url_for('company_dashboard'))
-            
-        except Exception as e:
-            logging.error(f"Error in company registration: {e}")
-            flash('Registration failed. Please try again.', 'error')
-            db.session.rollback()
-    
-    return render_template('company_register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -426,19 +281,6 @@ def view_matches():
     
     return render_template('matches.html', matches=matches)
 
-@app.route('/admin/generate-all-matches')
-def generate_all_matches():
-    """Admin function to generate matches for all students"""
-    try:
-        total_matches = matching_engine.generate_all_matches()
-        flash(f'Generated {total_matches} total matches!', 'success')
-        
-    except Exception as e:
-        logging.error(f"Error generating all matches: {e}")
-        flash('Failed to generate matches. Please try again.', 'error')
-    
-    return redirect(url_for('index'))
-
 @app.route('/student/apply/<int:internship_id>', methods=['POST'])
 def apply_internship(internship_id):
     """Apply to an internship"""
@@ -495,12 +337,6 @@ def view_applications():
                                   .order_by(Application.applied_at.desc()).all()
     
     return render_template('applications.html', applications=applications)
-
-@app.route('/internship/<int:internship_id>')
-def view_internship(internship_id):
-    """View internship details"""
-    internship = Internship.query.get_or_404(internship_id)
-    return render_template('internship_details.html', internship=internship)
 
 # Error handlers
 @app.errorhandler(404)
@@ -642,3 +478,23 @@ def complete_company_profile():
             db.session.rollback()
     
     return render_template('complete_company_profile.html', company=company, is_editing=True)
+
+@app.route('/internship/<int:internship_id>')
+def view_internship(internship_id):
+    """View internship details"""
+    internship = Internship.query.get_or_404(internship_id)
+    return render_template('internship_details.html', internship=internship)
+
+
+@app.route('/admin/generate-all-matches')
+def generate_all_matches():
+    """Admin function to generate matches for all students"""
+    try:
+        total_matches = matching_engine.generate_all_matches()
+        flash(f'Generated {total_matches} total matches!', 'success')
+        
+    except Exception as e:
+        logging.error(f"Error generating all matches: {e}")
+        flash('Failed to generate matches. Please try again.', 'error')
+    
+    return redirect(url_for('index'))
