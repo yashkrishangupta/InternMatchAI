@@ -4,7 +4,7 @@ import requests
 from flask import session, request, redirect, url_for
 from google_auth_oauthlib.flow import Flow
 from app import app, db
-from models import Student, Company
+from models import Student, Department
 
 # Google OAuth configuration
 GOOGLE_CLIENT_ID = ""
@@ -103,21 +103,11 @@ def handle_google_login(user_info, user_type):
                     profile_picture=picture,
                 )
                 db.session.add(user)
-    else:  # company
-        user = Company.query.filter_by(google_id=google_id).first()
-        if not user:
-            user = Company.query.filter_by(email=email).first()
-            if user:
-                user.google_id = google_id
-                user.profile_picture = picture
-            else:
-                user = Company(
-                    email=email,
-                    name=name,
-                    google_id=google_id,
-                    profile_picture=picture,
-                )
-                db.session.add(user)
+    else:  # department
+        user = Department.query.filter_by(email=email).first()
+        if user:
+            # Departments cannot use Google OAuth - only admin-created accounts
+            return False, "Departments must use admin-provided credentials"
 
     try:
         db.session.commit()
