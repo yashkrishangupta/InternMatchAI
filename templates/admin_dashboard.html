@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-shield me-2"></i>Admin Dashboard
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                <h3 class="mb-1">{{ total_students }}</h3>
+                                <small>Total Students</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-landmark fa-2x mb-2"></i>
+                                <h3 class="mb-1">{{ total_departments }}</h3>
+                                <small>Departments</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                <h3 class="mb-1">{{ total_internships }}</h3>
+                                <small>Total Internships</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card bg-warning text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                <h3 class="mb-1">{{ total_applications }}</h3>
+                                <small>Applications</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-building-columns me-2"></i>Recent Departments
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_departments %}
+                    {% for department in recent_departments %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">{{ department.name }}</h6>
+                                <p class="mb-1 text-muted">{{ department.ministry or 'Ministry not specified' }}</p>
+                                <p class="mb-0 small">
+                                    <i class="fas fa-envelope me-1"></i>{{ department.email }}
+                                    <span class="ms-3">
+                                        <i class="fas fa-calendar me-1"></i>Created {{ department.created_at.strftime('%d %b %Y') }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="mb-2">
+                                    {% if department.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <small class="text-muted">
+                                        {{ department.internships|length }} internships
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-building-columns fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No departments yet</h5>
+                        <p class="text-muted">Create your first department to get started.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tools me-2"></i>Admin Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('manage_departments') }}" class="btn btn-primary">
+                        <i class="fas fa-building-columns me-2"></i>Manage Departments
+                    </a>
+                    <a href="{{ url_for('generate_all_matches') }}" class="btn btn-success">
+                        <i class="fas fa-robot me-2"></i>Generate All Matches
+                    </a>
+                    <div class="border-top pt-3">
+                        <h6 class="mb-3">Quick Stats</h6>
+                        <div class="row g-2 text-center">
+                            <div class="col-6">
+                                <div class="border rounded p-2">
+                                    <small class="d-block text-muted">Active Depts</small>
+                                    <strong>{{ recent_departments|selectattr('is_active')|list|length }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-2">
+                                    <small class="d-block text-muted">This Month</small>
+                                    <strong>{{ recent_departments|length }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>System Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-2">
+                    <strong>Administrator:</strong> {{ admin.name }}
+                </p>
+                <p class="small text-muted mb-2">
+                    <strong>Role:</strong> {{ admin.role.title() }}
+                </p>
+                <p class="small text-muted mb-0">
+                    <strong>Last Login:</strong> 
+                    {% if admin.last_login %}
+                        {{ admin.last_login.strftime('%d %b %Y at %H:%M') }}
+                    {% else %}
+                        First time login
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
