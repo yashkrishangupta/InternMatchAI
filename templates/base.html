@@ -39,9 +39,10 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('profile') }}">
-                                    {% if session.get('google_auth') %}
-                                        <img src="{{ session.get('profile_picture') or url_for('static', filename='images/default-avatar.png') }}" 
+                                    {% if session.get('google_auth') and session.get('profile_picture') %}
+                                        <img src="{{ session.get('profile_picture') }}" 
                                              alt="Profile" class="rounded-circle me-2" style="width: 20px; height: 20px;">
+                                    {% else %}
                                         <i class="fas fa-user-graduate me-2"></i>
                                     {% endif %}
                                     Profile
@@ -60,8 +61,8 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('company_profile') }}">
-                                    {% if session.get('google_auth') %}
-                                        <img src="{{ session.get('profile_picture') or url_for('static', filename='images/default-avatar.png') }}" 
+                                    {% if session.get('google_auth') and session.get('profile_picture') %}
+                                        <img src="{{ session.get('profile_picture') }}" 
                                              alt="Profile" class="rounded-circle me-2" style="width: 20px; height: 20px;">
                                     {% else %}
                                         <i class="fas fa-building me-2"></i>
@@ -75,8 +76,8 @@
                                 <i class="fas fa-sign-out-alt me-1"></i>Logout
                             </a>
                         </li>
-                    {% else %}
-<!--                         <li class="nav-item">
+<!--                     {% else %}
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('index') }}">Home</a>
                         </li> -->
                     {% endif %}
