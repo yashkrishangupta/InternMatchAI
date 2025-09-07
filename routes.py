@@ -123,39 +123,68 @@ def student_register():
 
 @app.route('/complete_student_profile', methods=['GET', 'POST'])
 def complete_student_profile():
-    user_email = session.get('user_email')
-    if not user_email:
-        return redirect(url_for('login'))
+    """Complete or edit student profile - works for both Google OAuth and regular users"""
+    if session.get('user_type') != 'student':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
 
-    student = Student.query.filter_by(email=user_email).first()
+    student = Student.query.get(session.get('user_id'))
     if not student:
         flash("Student not found.", "danger")
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        # Update only fields submitted in the form
-        student.name = request.form.get('name', student.name)
-        student.phone = request.form.get('phone', student.phone)
-        student.institution = request.form.get('institution', student.institution)
-        student.course = request.form.get('course', student.course)
-        student.year_of_study = request.form.get('year_of_study', student.year_of_study)
-        student.cgpa = request.form.get('cgpa', student.cgpa)
-        student.technical_skills = request.form.get('technical_skills', student.technical_skills)
-        student.soft_skills = request.form.get('soft_skills', student.soft_skills)
-        student.sector_interests = request.form.get('sector_interests', student.sector_interests)
-        student.current_location = request.form.get('current_location', student.current_location)
-        student.preferred_locations = request.form.get('preferred_locations', student.preferred_locations)
-        student.social_category = request.form.get('social_category', student.social_category)
-        student.district_type = request.form.get('district_type', student.district_type)
-        student.home_district = request.form.get('home_district', student.home_district)
-        student.previous_internships = request.form.get('previous_internships', student.previous_internships)
-        student.pm_scheme_participant = bool(request.form.get('pm_scheme_participant', student.pm_scheme_participant))
+        try:
+            # Update student profile with form data
+            student.name = request.form.get('name') or student.name
+            student.phone = request.form.get('phone') or student.phone
+            student.institution = request.form.get('institution') or student.institution
+            student.course = request.form.get('course') or student.course
+            
+            # Handle numeric fields properly
+            year_str = request.form.get('year_of_study')
+            if year_str and year_str.isdigit():
+                student.year_of_study = int(year_str)
+                
+            cgpa_str = request.form.get('cgpa')
+            if cgpa_str:
+                try:
+                    student.cgpa = float(cgpa_str)
+                except ValueError:
+                    pass
+                    
+            prev_internships_str = request.form.get('previous_internships')
+            if prev_internships_str and prev_internships_str.isdigit():
+                student.previous_internships = int(prev_internships_str)
+            
+            # Update text fields
+            student.technical_skills = request.form.get('technical_skills') or student.technical_skills
+            student.soft_skills = request.form.get('soft_skills') or student.soft_skills
+            student.sector_interests = request.form.get('sector_interests') or student.sector_interests
+            student.current_location = request.form.get('current_location') or student.current_location
+            student.preferred_locations = request.form.get('preferred_locations') or student.preferred_locations
+            student.social_category = request.form.get('social_category') or student.social_category
+            student.district_type = request.form.get('district_type') or student.district_type
+            student.home_district = request.form.get('home_district') or student.home_district
+            
+            # Handle checkbox
+            student.pm_scheme_participant = bool(request.form.get('pm_scheme_participant'))
 
-        db.session.commit()
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for('profile'))
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+            
+            # If user came from Google OAuth and essential fields are now filled, go to dashboard
+            if session.get('google_auth') and student.institution and student.course:
+                return redirect(url_for('student_dashboard'))
+            else:
+                return redirect(url_for('profile'))
 
-    return render_template('complete_student_profile.html', student=student)
+        except Exception as e:
+            logging.error(f"Error updating student profile: {e}")
+            flash("Failed to update profile. Please try again.", "error")
+            db.session.rollback()
+
+    return render_template('complete_student_profile.html', student=student, is_editing=True)
 
 
 @app.route('/company/register', methods=['GET', 'POST'])
@@ -523,17 +552,19 @@ def oauth_callback():
             session['user_id'] = user.id
             session['google_auth'] = True  # mark as logged in via Google
         
-            # If student and profile incomplete
-            if user_type == "student" and not user.institution:
-                flash('Welcome! Please complete your profile.', 'info')
-                return redirect(url_for('complete_student_profile'))
+            # Check if this is a new user or profile is incomplete
+            if user_type == "student":
+                # Check if essential profile fields are missing
+                if not user.institution or not user.course:
+                    flash('Welcome! Please complete your profile to get started.', 'info')
+                    return redirect(url_for('complete_student_profile'))
+            elif user_type == "company":
+                # Check if essential profile fields are missing  
+                if not user.industry_sector:
+                    flash('Welcome! Please complete your company profile to start posting internships.', 'info')
+                    return redirect(url_for('complete_company_profile'))
         
-            # If company and profile incomplete
-            if user_type == "company" and not user.industry_sector:
-                flash('Welcome! Please complete your company profile.', 'info')
-                return redirect(url_for('complete_company_profile'))
-        
-            # Otherwise → dashboard
+            # Profile is complete → go to dashboard
             flash(f"Welcome back, {user.name}!", "success")
             return redirect(url_for(f"{user_type}_dashboard"))
 
