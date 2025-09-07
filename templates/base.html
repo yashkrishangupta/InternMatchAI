@@ -40,8 +40,8 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('profile') }}">
                                     {% if session.get('google_auth') %}
-                                        <img src="{{ student.profile_picture }}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px;">
-                                    {% else %}
+                                        <img src="{{ session.get('profile_picture') or url_for('static', filename='images/default-avatar.png') }}" 
+                                             alt="Profile" class="rounded-circle me-2" style="width: 20px; height: 20px;">
                                         <i class="fas fa-user-graduate me-2"></i>
                                     {% endif %}
                                     Profile
