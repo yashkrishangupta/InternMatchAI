@@ -74,14 +74,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-grid">
-                                        <a href="{{ url_for('google_auth', type='company') }}" class="btn btn-outline-danger btn-lg">
-                                            <i class="fab fa-google me-2"></i>
-                                            As Company
-                                        </a>
+                                        <button class="btn btn-outline-secondary btn-lg" disabled>
+                                            <i class="fas fa-landmark me-2"></i>
+                                            As Department
+                                        </button>
                                     </div>
                                     <p class="text-center mt-3 small text-muted">
-                                        <i class="fas fa-building me-1"></i>
-                                        Find the best talent for your internships
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Departments must use email/password login below
                                     </p>
                                 </div>
                             </div>
@@ -115,7 +115,8 @@
                                             <select class="form-select" id="user_type" name="user_type" required>
                                                 <option value="">Choose...</option>
                                                 <option value="student">Student</option>
-                                                <option value="company">Company</option>
+                                                <option value="department">Government Department</option>
+                                                <option value="admin">System Administrator</option>
                                             </select>
                                         </div>
                                         <div class="d-grid">
