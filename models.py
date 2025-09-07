@@ -151,6 +151,45 @@ class Company(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def calculate_profile_completeness(self):
+        fields = {
+            'name': 15,
+            'email': 15,
+            'industry_sector': 20,
+            'company_size': 10,
+            'location': 15,
+            'description': 10,
+            'contact_person': 10,
+            'contact_phone': 5,
+        }   
+    
+        # Labels for missing fields
+        labels = {
+            'name': 'Company Name',
+            'email': 'Email Address',
+            'industry_sector': 'Industry Sector',
+            'company_size': 'Company Size',
+            'location': 'Location',
+            'description': 'Company Description',
+            'contact_person': 'Contact Person',
+            'contact_phone': 'Contact Phone',
+        }
+    
+        completeness_score = 0
+        missing_fields = []
+    
+        for field, weight in fields.items():
+            value = getattr(self, field, None)
+            if value:
+                completeness_score += weight
+            else:
+                missing_fields.append(labels[field])
+    
+        # Cap completeness at 100%
+        completeness_score = min(completeness_score, 100)
+    
+        return completeness_score, missing_fields
+
 class Internship(db.Model):
     __tablename__ = 'internships'
     
