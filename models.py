@@ -120,19 +120,17 @@ class Student(db.Model):
         return completeness_score, missing_fields
 
 
-class Company(db.Model):
-    __tablename__ = 'companies'
+class Department(db.Model):
+    __tablename__ = 'departments'
     
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=True)  # Optional for Google auth
-    google_id = db.Column(db.String(100), unique=True, nullable=True)  # Google OAuth ID
-    profile_picture = db.Column(db.String(255), nullable=True)  # Google profile picture
+    password_hash = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(200), nullable=False)
     
-    # Company Information
-    industry_sector = db.Column(db.String(100))
-    company_size = db.Column(db.String(50))
+    # Department Information
+    ministry = db.Column(db.String(200))  # Ministry name
+    department_type = db.Column(db.String(100))  # Central/State/PSU/etc
     location = db.Column(db.String(100))
     description = db.Column(db.Text)
     
@@ -140,10 +138,13 @@ class Company(db.Model):
     contact_person = db.Column(db.String(100))
     contact_phone = db.Column(db.String(15))
     
+    # Status
+    is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('admins.id'), nullable=False)
     
     # Relationships
-    internships = db.relationship('Internship', backref='company', lazy=True)
+    internships = db.relationship('Internship', backref='department', lazy=True)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -153,10 +154,10 @@ class Company(db.Model):
 
     def calculate_profile_completeness(self):
         fields = {
-            'name': 15,
+            'name': 20,
             'email': 15,
-            'industry_sector': 20,
-            'company_size': 10,
+            'ministry': 15,
+            'department_type': 10,
             'location': 15,
             'description': 10,
             'contact_person': 10,
@@ -165,12 +166,12 @@ class Company(db.Model):
     
         # Labels for missing fields
         labels = {
-            'name': 'Company Name',
-            'email': 'Email Address',
-            'industry_sector': 'Industry Sector',
-            'company_size': 'Company Size',
+            'name': 'Department Name',
+            'email': 'Official Email Address',
+            'ministry': 'Ministry',
+            'department_type': 'Department Type',
             'location': 'Location',
-            'description': 'Company Description',
+            'description': 'Department Description',
             'contact_person': 'Contact Person',
             'contact_phone': 'Contact Phone',
         }
@@ -190,11 +191,35 @@ class Company(db.Model):
     
         return completeness_score, missing_fields
 
+
+class Admin(db.Model):
+    __tablename__ = 'admins'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    
+    # Admin Information
+    role = db.Column(db.String(50), default='admin')  # admin, super_admin
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
+    
+    # Relationships
+    created_departments = db.relationship('Department', backref='admin_creator', lazy=True)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 class Internship(db.Model):
     __tablename__ = 'internships'
     
     id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=False)
     
     # Basic Information
     title = db.Column(db.String(200), nullable=False)
