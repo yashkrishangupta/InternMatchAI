@@ -49,9 +49,13 @@ def complete_student_profile():
             # Update student profile with form data
             student.name = request.form.get('name') or student.name
             student.phone = request.form.get('phone') or student.phone
-            student.password = request.form.get('password') or student.password
             student.institution = request.form.get('institution') or student.institution
             student.course = request.form.get('course') or student.course
+
+            password = request.form.get('password')
+            if password:
+                student.set_password(password)
+
             
             # Handle numeric fields properly
             year_str = request.form.get('year_of_study')
