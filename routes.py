@@ -660,3 +660,30 @@ def view_internship(internship_id):
     """View internship details"""
     internship = Internship.query.get_or_404(internship_id)
     return render_template('internship_details.html', internship=internship)
+
+
+@app.route('/setup-first-admin', methods=['GET', 'POST'])
+def setup_first_admin():
+    # Only allow if no admins exist
+    if Admin.query.count() > 0:
+        return "Setup disabled", 403
+    
+    if request.method == 'POST':
+        admin = Admin(
+            email=request.form['email'],
+            name=request.form['name'],
+            role='super_admin'
+        )
+        admin.set_password(request.form['password'])
+        db.session.add(admin)
+        db.session.commit()
+        return "Admin created successfully!"
+    
+    return '''
+    <form method="post">
+        <input type="email" name="email" placeholder="Admin Email" required><br>
+        <input type="text" name="name" placeholder="Admin Name" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit">Create Admin</button>
+    </form>
+    '''
