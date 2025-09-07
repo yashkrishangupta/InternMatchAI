@@ -12,7 +12,7 @@ def index():
     """Home page with registration options"""
     return render_template('index.html')
 
-@app.route('/profile')
+@app.route('/student/profile')
 def profile():
     if session.get('user_type') != 'student':
         flash('Access denied.', 'danger')
@@ -294,6 +294,27 @@ def student_dashboard():
                         .limit(10).all()
     
     return render_template('student_dashboard.html', student=student, matches=matches)
+
+@app.route('/company/profile')
+def company_profile():
+    """Company profile view page"""
+    if session.get('user_type') != 'company':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+
+    company = Company.query.get(session.get('user_id'))
+    if not company:
+        flash("Company not found.", "danger")
+        return redirect(url_for('index'))
+
+    completeness_score, missing_fields = company.calculate_profile_completeness()
+
+    return render_template(
+        'company_profile_view.html',
+        company=company,
+        completeness_score=completeness_score,
+        missing_fields=missing_fields
+    )
 
 @app.route('/company/dashboard')
 def company_dashboard():
@@ -583,73 +604,41 @@ def oauth_callback():
         session.pop('oauth_state', None)
         session.pop('oauth_user_type', None)
 
-# @app.route('/complete-student-profile', methods=['GET', 'POST'])
-# def complete_student_profile():
-#     """Complete student profile after Google OAuth"""
-#     if session.get('user_type') != 'student' or not session.get('google_auth'):
-#         return redirect(url_for('index'))
-    
-#     student = Student.query.get(session['user_id'])
-#     if not student:
-#         return redirect(url_for('index'))
-    
-#     if request.method == 'POST':
-#         try:
-#             # Update student profile with additional information
-#             student.phone = request.form.get('phone')
-#             student.institution = request.form.get('institution')
-#             student.course = request.form.get('course')
-#             student.year_of_study = request.form.get('year_of_study', type=int)
-#             student.cgpa = request.form.get('cgpa', type=float)
-#             student.technical_skills = request.form.get('technical_skills')
-#             student.soft_skills = request.form.get('soft_skills')
-#             student.sector_interests = request.form.get('sector_interests')
-#             student.preferred_locations = request.form.get('preferred_locations')
-#             student.current_location = request.form.get('current_location')
-#             student.social_category = request.form.get('social_category')
-#             student.district_type = request.form.get('district_type')
-#             student.home_district = request.form.get('home_district')
-#             student.previous_internships = request.form.get('previous_internships', type=int, default=0)
-#             student.pm_scheme_participant = request.form.get('pm_scheme_participant') == 'on'
-            
-#             db.session.commit()
-#             flash('Profile completed successfully!', 'success')
-#             return redirect(url_for('student_dashboard'))
-            
-#         except Exception as e:
-#             logging.error(f"Error completing student profile: {e}")
-#             flash('Failed to complete profile. Please try again.', 'error')
-#             db.session.rollback()
-    
-#     return render_template('complete_student_profile.html', student=student)
-
 @app.route('/complete-company-profile', methods=['GET', 'POST'])
 def complete_company_profile():
-    """Complete company profile after Google OAuth"""
-    if session.get('user_type') != 'company' or not session.get('google_auth'):
+    """Complete or edit company profile - works for both Google OAuth and regular users"""
+    if session.get('user_type') != 'company':
+        flash('Access denied.', 'danger')
         return redirect(url_for('index'))
     
-    company = Company.query.get(session['user_id'])
+    company = Company.query.get(session.get('user_id'))
     if not company:
+        flash("Company not found.", "danger")
         return redirect(url_for('index'))
     
     if request.method == 'POST':
         try:
-            # Update company profile with additional information
-            company.industry_sector = request.form.get('industry_sector')
-            company.company_size = request.form.get('company_size')
-            company.location = request.form.get('location')
-            company.description = request.form.get('description')
-            company.contact_person = request.form.get('contact_person')
-            company.contact_phone = request.form.get('contact_phone')
+            # Update company profile with form data
+            company.name = request.form.get('name') or company.name
+            company.industry_sector = request.form.get('industry_sector') or company.industry_sector
+            company.company_size = request.form.get('company_size') or company.company_size
+            company.location = request.form.get('location') or company.location
+            company.description = request.form.get('description') or company.description
+            company.contact_person = request.form.get('contact_person') or company.contact_person
+            company.contact_phone = request.form.get('contact_phone') or company.contact_phone
             
             db.session.commit()
-            flash('Profile completed successfully!', 'success')
-            return redirect(url_for('company_dashboard'))
+            flash('Profile updated successfully!', 'success')
+            
+            # If user came from Google OAuth and essential fields are now filled, go to dashboard
+            if session.get('google_auth') and company.industry_sector:
+                return redirect(url_for('company_dashboard'))
+            else:
+                return redirect(url_for('company_profile'))
             
         except Exception as e:
-            logging.error(f"Error completing company profile: {e}")
-            flash('Failed to complete profile. Please try again.', 'error')
+            logging.error(f"Error updating company profile: {e}")
+            flash('Failed to update profile. Please try again.', 'error')
             db.session.rollback()
     
-    return render_template('complete_company_profile.html', company=company)
+    return render_template('complete_company_profile.html', company=company, is_editing=True)
