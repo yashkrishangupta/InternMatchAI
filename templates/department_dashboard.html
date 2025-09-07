@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Department Dashboard - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-landmark me-2"></i>{{ department.name }}
+                </h4>
+                <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create New Internship
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Ministry:</strong></p>
+                        <p class="text-muted">{{ department.ministry or 'Not specified' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Department Type:</strong></p>
+                        <p class="text-muted">{{ department.department_type or 'Not specified' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Location:</strong></p>
+                        <p class="text-muted">{{ department.location or 'Not specified' }}</p>
+                    </div>
+                    {% if department.contact_person %}
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Contact Person:</strong></p>
+                        <p class="text-muted">{{ department.contact_person }}</p>
+                    </div>
+                    {% endif %}
+                    {% if department.description %}
+                    <div class="col-12">
+                        <p class="mb-1"><strong>Description:</strong></p>
+                        <p class="text-muted">{{ department.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-briefcase me-2"></i>Your Internships
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if internships %}
+                    {% for internship in internships %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">{{ internship.title }}</h6>
+                                <p class="mb-1 text-muted">{{ internship.sector }}</p>
+                                <p class="mb-0 small">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ internship.location or 'Location not specified' }}
+                                    {% if internship.duration_months %}
+                                        <span class="ms-3"><i class="fas fa-clock me-1"></i>{{ internship.duration_months }} months</span>
+                                    {% endif %}
+                                    {% if internship.stipend %}
+                                        <span class="ms-3"><i class="fas fa-rupee-sign me-1"></i>{{ "%.0f"|format(internship.stipend) }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="mb-2">
+                                    {% if internship.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        {{ internship.filled_positions }}/{{ internship.total_positions }} filled
+                                    </small>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('view_internship', internship_id=internship.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No internships yet</h5>
+                        <p class="text-muted">Create your first internship posting to get started.</p>
+                        <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create Internship
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Department Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <h3 class="text-primary mb-1">{{ internships|length }}</h3>
+                            <small class="text-muted">Total Internships</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3">
+                            <h3 class="text-success mb-1">{{ internships|selectattr('is_active')|list|length }}</h3>
+                            <small class="text-muted">Active Postings</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create New Internship
+                    </a>
+                    <a href="{{ url_for('department_profile') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-user me-2"></i>Edit Profile
+                    </a>
+                    <a href="{{ url_for('complete_department_profile') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-edit me-2"></i>Update Department Info
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
