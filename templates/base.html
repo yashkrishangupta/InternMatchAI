@@ -40,7 +40,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('profile') }}">
                                     {% if session.get('google_auth') %}
-                                        <img src="{{ student.profile_picture }}" alt="Profile Picture" class="rounded-circle" style="width: 10px; height: 10px;">
+                                        <img src="{{ student.profile_picture }}" alt="Profile Picture" class="rounded-circle" style="width: 20px; height: 20px;">
                                     {% else %}
                                         <i class="fas fa-user-graduate me-2"></i>
                                     {% endif %}
@@ -62,7 +62,7 @@
                                 <a class="nav-link" href="{{ url_for('company_profile') }}">
                                     {% if session.get('google_auth') %}
                                         <img src="{{ session.get('profile_picture') or url_for('static', filename='images/default-avatar.png') }}" 
-                                             alt="Profile" class="rounded-circle me-2" style="width: 10px; height: 10px;">
+                                             alt="Profile" class="rounded-circle me-2" style="width: 20px; height: 20px;">
                                     {% else %}
                                         <i class="fas fa-building me-2"></i>
                                     {% endif %}
