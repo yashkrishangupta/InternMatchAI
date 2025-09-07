@@ -61,10 +61,10 @@
 
                 <!-- Basic Information -->
                 <h5 class="mb-2 text-info">Basic Information</h5>
+                {{ display_field('Profile Picture', student.profile_picture, missing_fields) }}
                 {{ display_field('Full Name', student.name, missing_fields) }}
                 {{ display_field('Email', student.email, missing_fields) }}
                 {{ display_field('Phone Number', student.phone, missing_fields) }}
-                {{ display_field('Profile Picture', student.profile_picture, missing_fields) }}
 
                 <!-- Academic Information -->
                 <h5 class="mb-2 text-info">Academic Information</h5>
