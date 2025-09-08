@@ -25,8 +25,16 @@
                             <input type="email" class="form-control" name="email" value="{{ student.email or '' }}" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Password *</label>
-                            <input type="password" class="form-control" name="password" placeholder="Leave blank to keep current password" required>
+                            <label class="form-label">Password {% if not student.password_hash %}*{% endif %}</label>
+                            <input type="password" class="form-control" name="password" 
+                                   placeholder="{% if student.password_hash %}Leave blank to keep current password{% else %}Set your password{% endif %}"
+                                   {% if not student.password_hash %}required{% endif %}>
+                            {% if not student.password_hash %}
+                            <div class="form-text text-warning">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Since you registered with Google, please set a password for your account.
+                            </div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Phone Number</label>
