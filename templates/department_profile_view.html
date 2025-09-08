@@ -1,82 +1,132 @@
 {% extends "base.html" %}
 
-{% block title %}Complete Department Profile{% endblock %}
+{% block title %}Department Profile - AI Internship Matching{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">
-                    <i class="fas fa-landmark me-2"></i>Complete Department Profile
-                </h4>
+    <div class="col-lg-10">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="fas fa-landmark me-2"></i>Department Profile</h3>
+                <a href="{{ url_for('complete_department_profile') }}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
             </div>
             <div class="card-body">
-                <form method="POST">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label">Department Name *</label>
-                            <input type="text" class="form-control" id="name" name="name" 
-                                   value="{{ department.name or '' }}" required>
+
+                <!-- Profile Completeness Progress -->
+                <div class="mb-3">
+                    <div class="progress" style="height: 12px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ completeness_score }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ completeness_score }}% Complete</small>
+                </div>
+
+                {% macro display_field(label, value, missing_fields) %}
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <strong>{{ label }}:</strong>
                         </div>
-                        
-                        <div class="col-md-6">
-                            <label for="ministry" class="form-label">Ministry</label>
-                            <input type="text" class="form-control" id="ministry" name="ministry" 
-                                   value="{{ department.ministry or '' }}" 
-                                   placeholder="e.g. Ministry of Electronics and IT">
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="department_type" class="form-label">Department Type</label>
-                            <select class="form-select" id="department_type" name="department_type">
-                                <option value="">Choose...</option>
-                                <option value="Central Government" {% if department.department_type == 'Central Government' %}selected{% endif %}>Central Government</option>
-                                <option value="State Government" {% if department.department_type == 'State Government' %}selected{% endif %}>State Government</option>
-                                <option value="PSU" {% if department.department_type == 'PSU' %}selected{% endif %}>Public Sector Undertaking</option>
-                                <option value="Autonomous Body" {% if department.department_type == 'Autonomous Body' %}selected{% endif %}>Autonomous Body</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location" name="location" 
-                                   value="{{ department.location or '' }}" 
-                                   placeholder="City, State">
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="contact_person" class="form-label">Contact Person</label>
-                            <input type="text" class="form-control" id="contact_person" name="contact_person" 
-                                   value="{{ department.contact_person or '' }}">
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="contact_phone" class="form-label">Contact Phone</label>
-                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
-                                   value="{{ department.contact_phone or '' }}">
-                        </div>
-                        
-                        <div class="col-12">
-                            <label for="description" class="form-label">Department Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="4" 
-                                      placeholder="Provide a brief description of your department, its mission, and areas of work...">{{ department.description or '' }}</textarea>
+                        <div class="col-sm-8">
+                            {% if value %}
+                                {% if label == 'Department Type' %}
+                                    <span class="badge bg-info">{{ value }}</span>
+                                {% elif label == 'Status' %}
+                                    {% if value %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                {% else %}
+                                    {{ value }}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted fst-italic">Not provided - click Edit Profile to add</span>
+                            {% endif %}
                         </div>
                     </div>
-                    
-                    <hr class="my-4">
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Save Profile
-                            </button>
-                            <a href="{{ url_for('department_dashboard') }}" class="btn btn-outline-secondary ms-2">
-                                Cancel
+                {% endmacro %}
+
+                <!-- Basic Information -->
+                <h5 class="mb-2 text-info">Basic Information</h5>
+                {{ display_field('Department Name', department.name, missing_fields) }}
+                {{ display_field('Email', department.email, missing_fields) }}
+                {{ display_field('Ministry', department.ministry, missing_fields) }}
+                {{ display_field('Department Type', department.department_type, missing_fields) }}
+                {{ display_field('Location', department.location, missing_fields) }}
+
+                <!-- Description -->
+                {% if department.description %}
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Description:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="border-start border-3 border-info ps-3">
+                            {{ department.description|nl2br|safe }}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <strong>Description:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="text-muted fst-italic">Not provided - click Edit Profile to add</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Contact Information -->
+                <h5 class="mb-2 text-info">Contact Information</h5>
+                {{ display_field('Contact Person', department.contact_person, missing_fields) }}
+                {{ display_field('Contact Phone', department.contact_phone, missing_fields) }}
+
+                <!-- Status Information -->
+                <h5 class="mb-2 text-info">Status Information</h5>
+                {{ display_field('Status', department.is_active, missing_fields) }}
+                {{ display_field('Account Created', department.created_at.strftime('%B %d, %Y')) }}
+                
+                <!-- Statistics -->
+                <h5 class="mb-2 text-info">Statistics</h5>
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <strong>Total Internships Posted:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.internships|length }}
+                        {% if department.internships %}
+                            <a href="{{ url_for('department_dashboard') }}" class="btn btn-sm btn-outline-primary ms-2">
+                                <i class="fas fa-eye me-1"></i>View All
                             </a>
-                        </div>
+                        {% endif %}
                     </div>
-                </form>
+                </div>
+                
+                {% if department.internships %}
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <strong>Active Internships:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.internships|selectattr('is_active')|list|length }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Optional: Show missing fields list separately -->
+                {% if missing_fields %}
+                <div class="mt-3">
+                    <h6 class="small text-warning">Missing Information:</h6>
+                    <ul class="small text-muted mb-0">
+                        {% for field in missing_fields %}
+                            <li>{{ field }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
             </div>
         </div>
     </div>
