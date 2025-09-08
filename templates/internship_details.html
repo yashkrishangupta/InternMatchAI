@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}{{ internship.title }} - AI Internship Matching{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="fas fa-briefcase me-2"></i>{{ internship.title }}</h3>
+                {% if session.user_type == 'department' and internship.department_id == session.user_id %}
+                    <a href="{{ url_for('edit_internship', internship_id=internship.id) }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Internship
+                    </a>
+                {% elif session.user_type == 'student' %}
+                    <button class="btn btn-success" onclick="applyForInternship({{ internship.id }})">
+                        <i class="fas fa-paper-plane me-2"></i>Apply Now
+                    </button>
+                {% endif %}
+            </div>
+            <div class="card-body">
+
+                {% macro display_field(label, value, type='text') %}
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <strong>{{ label }}:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if value %}
+                                {% if type == 'skills' %}
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for item in value.split(',') %}
+                                            <span class="badge bg-primary">{{ item.strip() }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% elif type == 'currency' %}
+                                    ₹{{ "{:,.0f}".format(value) }}
+                                {% elif type == 'boolean' %}
+                                    {{ 'Yes' if value else 'No' }}
+                                {% elif type == 'float' %}
+                                    {{ "%.1f"|format(value) }}
+                                {% elif type == 'duration' %}
+                                    {{ value }} month{{ 's' if value != 1 else '' }}
+                                {% elif type == 'positions' %}
+                                    {{ value.filled_positions }} / {{ value.total_positions }}
+                                    {% if value.total_positions > value.filled_positions %}
+                                        <span class="badge bg-success ms-2">{{ value.total_positions - value.filled_positions }} positions available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger ms-2">Filled</span>
+                                    {% endif %}
+                                {% else %}
+                                    {{ value }}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted fst-italic">Not specified</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endmacro %}
+
+                <!-- Basic Information -->
+                <h5 class="mb-3 text-info">Basic Information</h5>
+                {{ display_field('Department', internship.department.name) }}
+                {{ display_field('Sector', internship.sector) }}
+                {{ display_field('Location', internship.location) }}
+                
+                <!-- Description -->
+                {% if internship.description %}
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Description:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="border-start border-3 border-info ps-3">
+                            {{ internship.description|nl2br|safe }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Duration and Compensation -->
+                <h5 class="mb-3 text-info">Duration and Compensation</h5>
+                {{ display_field('Duration', internship.duration_months, 'duration') }}
+                {{ display_field('Monthly Stipend', internship.stipend, 'currency') }}
+
+                <!-- Requirements -->
+                <h5 class="mb-3 text-info">Requirements</h5>
+                {{ display_field('Required Skills', internship.required_skills, 'skills') }}
+                {{ display_field('Preferred Course', internship.preferred_course) }}
+                {{ display_field('Minimum CGPA', internship.min_cgpa, 'float') }}
+                {{ display_field('Year of Study', internship.year_of_study_requirement) }}
+
+                <!-- Capacity -->
+                <h5 class="mb-3 text-info">Capacity</h5>
+                {{ display_field('Positions', internship, 'positions') }}
+
+                <!-- Diversity Quotas -->
+                {% if internship.rural_quota or internship.sc_quota or internship.st_quota or internship.obc_quota %}
+                <h5 class="mb-3 text-info">Diversity and Inclusion Quotas</h5>
+                {% if internship.rural_quota %}{{ display_field('Rural/Aspirational Districts', internship.rural_quota) }}{% endif %}
+                {% if internship.sc_quota %}{{ display_field('SC Category', internship.sc_quota) }}{% endif %}
+                {% if internship.st_quota %}{{ display_field('ST Category', internship.st_quota) }}{% endif %}
+                {% if internship.obc_quota %}{{ display_field('OBC Category', internship.obc_quota) }}{% endif %}
+                {% endif %}
+
+                <!-- Status Information -->
+                <h5 class="mb-3 text-info">Status Information</h5>
+                {{ display_field('Status', 'Active' if internship.is_active else 'Inactive') }}
+                {{ display_field('Application Deadline', internship.application_deadline.strftime('%B %d, %Y') if internship.application_deadline else 'Not specified') }}
+                {{ display_field('Posted Date', internship.created_at.strftime('%B %d, %Y')) }}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function applyForInternship(internshipId) {
+    // This would typically redirect to an application form or modal
+    window.location.href = '/apply/' + internshipId;
+}
+</script>
+{% endblock %}
