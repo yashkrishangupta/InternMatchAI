@@ -277,6 +277,55 @@ def create_internship():
     
     return render_template('create_internship.html')
 
+@app.route('/internship/edit/<int:internship_id>', methods=['GET', 'POST'])
+def edit_internship(internship_id):
+    """Edit existing internship"""
+    if session.get('user_type') != 'department':
+        return redirect(url_for('index'))
+    
+    # Get the internship and verify ownership
+    internship = Internship.query.get_or_404(internship_id)
+    if internship.department_id != session['user_id']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('department_dashboard'))
+    
+    if request.method == 'POST':
+        try:
+            # Update internship with form data
+            internship.title = request.form.get('title', internship.title)
+            internship.description = request.form.get('description', internship.description)
+            internship.sector = request.form.get('sector', internship.sector)
+            internship.location = request.form.get('location', internship.location)
+            internship.required_skills = request.form.get('required_skills', internship.required_skills)
+            internship.preferred_course = request.form.get('preferred_course', internship.preferred_course)
+            internship.min_cgpa = request.form.get('min_cgpa', type=float) or internship.min_cgpa
+            internship.year_of_study_requirement = request.form.get('year_of_study_requirement', internship.year_of_study_requirement)
+            internship.total_positions = request.form.get('total_positions', type=int) or internship.total_positions
+            internship.duration_months = request.form.get('duration_months', type=int) or internship.duration_months
+            internship.stipend = request.form.get('stipend', type=float) or internship.stipend
+            
+            # Update affirmative action quotas
+            internship.rural_quota = request.form.get('rural_quota', type=int, default=0)
+            internship.sc_quota = request.form.get('sc_quota', type=int, default=0)
+            internship.st_quota = request.form.get('st_quota', type=int, default=0)
+            internship.obc_quota = request.form.get('obc_quota', type=int, default=0)
+            
+            # Validate required fields
+            if not all([internship.title, internship.description, internship.sector, internship.total_positions]):
+                flash('Please fill all required fields', 'error')
+                return render_template('create_internship.html', internship=internship, is_editing=True)
+            
+            db.session.commit()
+            flash('Internship updated successfully!', 'success')
+            return redirect(url_for('view_internship', internship_id=internship.id))
+            
+        except Exception as e:
+            logging.error(f"Error updating internship: {e}")
+            flash('Failed to update internship. Please try again.', 'error')
+            db.session.rollback()
+    
+    return render_template('create_internship.html', internship=internship, is_editing=True)
+
 @app.route('/student/generate-matches')
 def generate_matches():
     """Generate matches for current student"""
