@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Create Internship - AI Internship Matching{% endblock %}
+{% block title %}{% if is_editing %}Edit{% else %}Create{% endif %} Internship - AI Internship Matching{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -8,7 +8,11 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="mb-0">
-                    <i class="fas fa-plus me-2"></i>Create New Internship
+                    {% if is_editing %}
+                        <i class="fas fa-edit me-2"></i>Edit Internship
+                    {% else %}
+                        <i class="fas fa-plus me-2"></i>Create New Internship
+                    {% endif %}
                 </h3>
             </div>
             <div class="card-body">
@@ -19,17 +23,19 @@
                         <div class="col-md-6">
                             <label class="form-label">Internship Title *</label>
                             <input type="text" class="form-control" name="title" required 
+                                   value="{{ internship.title if is_editing else '' }}"
                                    placeholder="e.g., Software Development Intern">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Sector *</label>
                             <input type="text" class="form-control" name="sector" required 
+                                   value="{{ internship.sector if is_editing else '' }}"
                                    placeholder="e.g., Technology, Finance, Healthcare">
                         </div>
                         <div class="col-12">
                             <label class="form-label">Description *</label>
                             <textarea class="form-control" name="description" rows="4" required 
-                                      placeholder="Detailed description of the internship role, responsibilities, and what the intern will learn"></textarea>
+                                      placeholder="Detailed description of the internship role, responsibilities, and what the intern will learn">{{ internship.description if is_editing else '' }}</textarea>
                         </div>
                     </div>
 
@@ -39,15 +45,18 @@
                         <div class="col-md-4">
                             <label class="form-label">Location</label>
                             <input type="text" class="form-control" name="location" 
+                                   value="{{ internship.location if is_editing else '' }}"
                                    placeholder="e.g., Mumbai, Remote, Hybrid">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Duration (months)</label>
-                            <input type="number" class="form-control" name="duration_months" min="1" max="12">
+                            <input type="number" class="form-control" name="duration_months" min="1" max="12"
+                                   value="{{ internship.duration_months if is_editing else '' }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Monthly Stipend (₹)</label>
-                            <input type="number" class="form-control" name="stipend" min="0" step="1000">
+                            <input type="number" class="form-control" name="stipend" min="0" step="1000"
+                                   value="{{ internship.stipend if is_editing else '' }}">
                         </div>
                     </div>
 
@@ -57,29 +66,31 @@
                         <div class="col-md-6">
                             <label class="form-label">Required Skills</label>
                             <textarea class="form-control" name="required_skills" rows="3" 
-                                      placeholder="e.g., Python, JavaScript, Communication, Problem Solving"></textarea>
+                                      placeholder="e.g., Python, JavaScript, Communication, Problem Solving">{{ internship.required_skills if is_editing else '' }}</textarea>
                             <div class="form-text">Separate skills with commas</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Preferred Course</label>
                             <input type="text" class="form-control" name="preferred_course" 
+                                   value="{{ internship.preferred_course if is_editing else '' }}"
                                    placeholder="e.g., Computer Science, Engineering, Any">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Minimum CGPA</label>
-                            <input type="number" class="form-control" name="min_cgpa" step="0.1" min="0" max="10">
+                            <input type="number" class="form-control" name="min_cgpa" step="0.1" min="0" max="10"
+                                   value="{{ internship.min_cgpa if is_editing else '' }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Year of Study Requirement</label>
                             <select class="form-select" name="year_of_study_requirement">
-                                <option value="">Any Year</option>
-                                <option value="1">First Year</option>
-                                <option value="2">Second Year</option>
-                                <option value="3">Third Year</option>
-                                <option value="4">Fourth Year</option>
-                                <option value="junior">Junior Years (1-2)</option>
-                                <option value="senior">Senior Years (3-4)</option>
-                                <option value="final">Final Year Students</option>
+                                <option value="" {% if not is_editing or not internship.year_of_study_requirement %}selected{% endif %}>Any Year</option>
+                                <option value="1" {% if is_editing and internship.year_of_study_requirement == '1' %}selected{% endif %}>First Year</option>
+                                <option value="2" {% if is_editing and internship.year_of_study_requirement == '2' %}selected{% endif %}>Second Year</option>
+                                <option value="3" {% if is_editing and internship.year_of_study_requirement == '3' %}selected{% endif %}>Third Year</option>
+                                <option value="4" {% if is_editing and internship.year_of_study_requirement == '4' %}selected{% endif %}>Fourth Year</option>
+                                <option value="junior" {% if is_editing and internship.year_of_study_requirement == 'junior' %}selected{% endif %}>Junior Years (1-2)</option>
+                                <option value="senior" {% if is_editing and internship.year_of_study_requirement == 'senior' %}selected{% endif %}>Senior Years (3-4)</option>
+                                <option value="final" {% if is_editing and internship.year_of_study_requirement == 'final' %}selected{% endif %}>Final Year Students</option>
                             </select>
                         </div>
                     </div>
@@ -89,12 +100,14 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Total Positions *</label>
-                            <input type="number" class="form-control" name="total_positions" min="1" required value="1">
+                            <input type="number" class="form-control" name="total_positions" min="1" required 
+                                   value="{{ internship.total_positions if is_editing else '1' }}">
                         </div>
                         <div class="col-md-6">
                             <!-- This would be updated by the system -->
                             <label class="form-label">Filled Positions (read-only)</label>
-                            <input type="number" class="form-control" value="0" readonly>
+                            <input type="number" class="form-control" 
+                                   value="{{ internship.filled_positions if is_editing else '0' }}" readonly>
                         </div>
                     </div>
 
@@ -107,19 +120,23 @@
                     <div class="row g-3 mb-4">
                         <div class="col-md-3">
                             <label class="form-label">Rural/Aspirational Districts</label>
-                            <input type="number" class="form-control" name="rural_quota" min="0" value="0">
+                            <input type="number" class="form-control" name="rural_quota" min="0" 
+                                   value="{{ internship.rural_quota if is_editing else '0' }}">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">SC Category</label>
-                            <input type="number" class="form-control" name="sc_quota" min="0" value="0">
+                            <input type="number" class="form-control" name="sc_quota" min="0" 
+                                   value="{{ internship.sc_quota if is_editing else '0' }}">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">ST Category</label>
-                            <input type="number" class="form-control" name="st_quota" min="0" value="0">
+                            <input type="number" class="form-control" name="st_quota" min="0" 
+                                   value="{{ internship.st_quota if is_editing else '0' }}">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">OBC Category</label>
-                            <input type="number" class="form-control" name="obc_quota" min="0" value="0">
+                            <input type="number" class="form-control" name="obc_quota" min="0" 
+                                   value="{{ internship.obc_quota if is_editing else '0' }}">
                         </div>
                     </div>
 
@@ -132,7 +149,11 @@
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{{ url_for('department_dashboard') }}" class="btn btn-secondary me-md-2">Cancel</a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Create Internship
+                            {% if is_editing %}
+                                <i class="fas fa-save me-2"></i>Update Internship
+                            {% else %}
+                                <i class="fas fa-plus me-2"></i>Create Internship
+                            {% endif %}
                         </button>
                     </div>
                 </form>
