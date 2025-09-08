@@ -72,7 +72,7 @@
                     </div>
                     <div class="col-sm-8">
                         <div class="border-start border-3 border-info ps-3">
-                            {{ internship.description|nl2br|safe }}
+                            {{ internship.description|replace('\n', '<br>')|safe }}
                         </div>
                     </div>
                 </div>
