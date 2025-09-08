@@ -1,128 +1,145 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="text-center mb-5">
-            <h1 class="display-4 mb-3">
-                <i class="fas fa-brain text-info me-3"></i>
-                AI Internship Matching System
-            </h1>
-            <p class="lead">Smart, automated matching of students with the perfect internship opportunities using advanced AI algorithms</p>
-        </div>
+<!-- Aurora Background -->
+<div class="aurora-background">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="aurora aurora-3"></div>
+</div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="feature-icon text-info">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <h5 class="card-title text-gradient">AI-Powered Matching</h5>
-                        <p class="card-text">Advanced machine learning algorithms analyze skills, preferences, and qualifications to find the perfect internship matches.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="feature-icon text-success">
-                            <i class="fas fa-balance-scale"></i>
-                        </div>
-                        <h5 class="card-title text-gradient">Fair & Inclusive</h5>
-                        <p class="card-text">Implements affirmative action policies to ensure representation from rural districts and diverse social categories.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="feature-icon text-warning">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h5 class="card-title text-gradient">Smart Analytics</h5>
-                        <p class="card-text">Detailed scoring system considering skills compatibility, location preferences, and academic achievements.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+<!-- Header Section with Rotating Globe -->
+<div class="header-container mb-5">
+    <div id="globe-container"></div>
+    <div class="header-text text-center">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-brain me-3 text-info"></i>
+            AI Internship Matching System
+        </h1>
+        <p class="lead">
+            Smart, automated matching of students with their 
+            <span class="text-info">dream career</span> using advanced AI algorithms
+        </p>
         {% if not session.user_type %}
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title text-center mb-4 text-gradient">Get Started</h2>
-                        
-                        <!-- Google OAuth Registration -->
-                        <div class="mb-4">
-                            <h5 class="text-center mb-4">
-                                <i class="fab fa-google me-2 text-danger"></i>Login or Register with Google
-                            </h5>
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="d-grid">
-                                        <a href="{{ url_for('google_auth', type='student') }}" class="btn btn-danger btn-lg">
-                                            <i class="fab fa-google me-2"></i>
-                                            As Student
-                                        </a>
-                                    </div>
-                                    <p class="text-center mt-3 small text-muted">
-                                        <i class="fas fa-graduation-cap me-1"></i>
-                                        Find your perfect internship opportunity
-                                    </p>
-                                </div>
-                                
-                            </div>
-                            <div class="text-center mt-3">
-                                <p class="small text-success">
-                                    <i class="fas fa-shield-alt me-1"></i>
-                                    Fast, secure, one-click registration with your Google account
-                                </p>
-                            </div>
-                        </div>
+        <div class="mt-4">
+            <a href="#get-started" class="btn btn-primary btn-lg shadow-lg px-4 py-2" onclick="smoothScroll(event)">
+                <i class="fas fa-sign-in-alt me-2"></i>Login / Get Started
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
 
-                        <div class="mt-4">
-                            <hr class="my-4">
-                            <h5 class="text-center mb-4">
-                                <i class="fas fa-envelope me-2 text-primary"></i>Login with Email & Password
-                            </h5>
-                            
-                            <form method="POST" action="{{ url_for('login') }}">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">Email Address</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">Password</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="user_type" class="form-label">I am a</label>
-                                            <select class="form-select" id="user_type" name="user_type" required>
-                                                <option value="">Choose...</option>
-                                                <option value="student">Student</option>
-                                                <option value="department">Government Department</option>
-                                                <option value="admin">System Administrator</option>
-                                            </select>
-                                        </div>
+<div class="container-fluid py-5 position-relative" style="z-index:2;">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 text-white">
+
+            <!-- Features Section -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 bg-dark text-white">
+                        <div class="card-body text-center">
+                            <div class="feature-icon text-info mb-3 fs-1">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">AI-Powered Matching</h5>
+                            <p class="card-text text-muted">Advanced machine learning algorithms analyze skills, preferences, and qualifications to find the perfect internship matches.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 bg-dark text-white">
+                        <div class="card-body text-center">
+                            <div class="feature-icon text-success mb-3 fs-1">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <h5 class="card-title">Fair & Inclusive</h5>
+                            <p class="card-text text-muted">Implements affirmative action policies to ensure representation from rural districts and diverse social categories.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 bg-dark text-white">
+                        <div class="card-body text-center">
+                            <div class="feature-icon text-warning mb-3 fs-1">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="card-title">Smart Analytics</h5>
+                            <p class="card-text text-muted">Detailed scoring system considering skills compatibility, location preferences, and academic achievements.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if not session.user_type %}
+            <!-- Get Started Section -->
+            <div id="get-started" class="row justify-content-center my-5">
+                <div class="col-md-10">
+                    <div class="card border-0 shadow-lg rounded-4 bg-dark text-white">
+                        <div class="card-body p-4">
+                            <h2 class="card-title text-center mb-4 fw-bold text-info">Get Started</h2>
+
+                            <!-- Google OAuth Registration -->
+                            <div class="mb-3">
+                                <h5 class="text-center mb-4">
+                                    <i class="fab fa-google me-2 text-danger"></i>Login or Register with Google
+                                </h5>
+                                <div class="row g-4 justify-content-center">
+                                    <div class="col-md-6 col-lg-4">
                                         <div class="d-grid">
-                                            <button type="submit" class="btn btn-primary btn-lg">
-                                                <i class="fas fa-sign-in-alt me-2"></i>Login
-                                            </button>
+                                            <a href="{{ url_for('google_auth', type='student') }}" class="btn btn-danger btn-lg shadow-sm">
+                                                <i class="fab fa-google me-2"></i>
+                                                As Student
+                                            </a>
                                         </div>
+                                        <p class="text-center mt-3 small text-muted">
+                                            <i class="fas fa-graduation-cap me-1"></i>
+                                            Find your perfect internship opportunity
+                                        </p>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="card border-0" style="background: var(--glass-bg); backdrop-filter: blur(8px);">
-                                            <div class="card-body text-center">
-                                                <h6 class="card-title">
-                                                    <i class="fas fa-user-plus me-2 text-success"></i>New User?
-                                                </h6>
-                                                <p class="card-text small">Don't have an account yet? Use the Google registration buttons above to create your account quickly and securely.</p>
-                                                <div class="mt-3">
-                                                    <p class="small text-muted">
+                                </div>
+                            </div>
+
+                            <!-- Email & Password Login -->
+                            <div class="mt-4">
+                                <hr class="my-4 border-light">
+                                <h5 class="text-center mb-4">
+                                    <i class="fas fa-envelope me-2 text-primary"></i>Login with Email & Password
+                                </h5>
+                                <form method="POST" action="{{ url_for('login') }}">
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="email" class="form-control bg-dark text-white border-secondary" id="email" name="email" placeholder="Email" required>
+                                                <label for="email">Email Address</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input type="password" class="form-control bg-dark text-white border-secondary" id="password" name="password" placeholder="Password" required>
+                                                <label for="password">Password</label>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="user_type" class="form-label">I am a</label>
+                                                <select class="form-select bg-dark text-white border-secondary" id="user_type" name="user_type" required>
+                                                    <option value="">Choose...</option>
+                                                    <option value="student">Student</option>
+                                                    <option value="department">Government Department</option>
+                                                    <option value="admin">System Administrator</option>
+                                                </select>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card border-0 rounded-4 shadow-sm bg-secondary text-white">
+                                                <div class="card-body text-center">
+                                                    <h6 class="card-title">
+                                                        <i class="fas fa-user-plus me-2 text-success"></i>New User?
+                                                    </h6>
+                                                    <p class="card-text small">Don't have an account yet? Use the Google registration buttons above to create your account quickly and securely.</p>
+                                                    <p class="small text-muted mt-3">
                                                         <i class="fas fa-shield-alt me-1"></i>
                                                         Already have an account? Enter your email and password on the left.
                                                     </p>
@@ -130,60 +147,186 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="mt-4">
-                            <div class="alert alert-info border-0" style="background: var(--glass-bg); backdrop-filter: blur(8px);">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-info-circle me-3 text-info"></i>
-                                    <div>
-                                        <strong>Choose your preferred method:</strong> Register with Google for quick setup, or login with your email and password if you already have an account.
-                                        <br><small class="text-muted">Your Google account will be automatically linked to your existing profile data.</small>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        <div class="mt-5">
-            <h3 class="text-center mb-4">How It Works</h3>
-            <div class="row g-4">
-                <div class="col-md-3 text-center">
-                    <div class="step-number bg-info text-white">
-                        <span>1</span>
+            <!-- How It Works Section -->
+            <div class="mt-5">
+                <h3 class="text-center mb-4 fw-bold text-white">How It Works</h3>
+                <div class="row g-4">
+                    <div class="col-md-3 text-center">
+                        <div class="step-number bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow"
+                             style="width:60px; height:60px; font-size:1.5rem;">
+                            <span>1</span>
+                        </div>
+                        <h6 class="fw-bold">Register & Create Profile</h6>
+                        <p class="small text-muted">Students and departments create detailed profiles with skills, preferences, and requirements.</p>
                     </div>
-                    <h6 class="fw-bold">Register & Create Profile</h6>
-                    <p class="small text-muted">Students and companies create detailed profiles with skills, preferences, and requirements.</p>
-                </div>
-                <div class="col-md-3 text-center">
-                    <div class="step-number bg-success text-white">
-                        <span>2</span>
+                    <div class="col-md-3 text-center">
+                        <div class="step-number bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow"
+                             style="width:60px; height:60px; font-size:1.5rem;">
+                            <span>2</span>
+                        </div>
+                        <h6 class="fw-bold">AI Analysis</h6>
+                        <p class="small text-muted">Our AI algorithms analyze compatibility based on multiple criteria and fairness factors.</p>
                     </div>
-                    <h6 class="fw-bold">AI Analysis</h6>
-                    <p class="small text-muted">Our AI algorithms analyze compatibility based on multiple criteria and fairness factors.</p>
-                </div>
-                <div class="col-md-3 text-center">
-                    <div class="step-number bg-warning text-white">
-                        <span>3</span>
+                    <div class="col-md-3 text-center">
+                        <div class="step-number bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow"
+                             style="width:60px; height:60px; font-size:1.5rem;">
+                            <span>3</span>
+                        </div>
+                        <h6 class="fw-bold">Smart Matching</h6>
+                        <p class="small text-muted">Generate personalized matches with detailed compatibility scores and rankings.</p>
                     </div>
-                    <h6 class="fw-bold">Smart Matching</h6>
-                    <p class="small text-muted">Generate personalized matches with detailed compatibility scores and rankings.</p>
-                </div>
-                <div class="col-md-3 text-center">
-                    <div class="step-number bg-danger text-white">
-                        <span>4</span>
+                    <div class="col-md-3 text-center">
+                        <div class="step-number bg-danger text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow"
+                             style="width:60px; height:60px; font-size:1.5rem;">
+                            <span>4</span>
+                        </div>
+                        <h6 class="fw-bold">Connect & Apply</h6>
+                        <p class="small text-muted">Students view their best matches and connect with departments for internship opportunities.</p>
                     </div>
-                    <h6 class="fw-bold">Connect & Apply</h6>
-                    <p class="small text-muted">Students view their best matches and connect with companies for internship opportunities.</p>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
+
+<!-- Aurora Background Styles + Globe Styles -->
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+    }
+    .aurora-background {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -1;
+        background: #000;
+        overflow: hidden;
+    }
+    .aurora {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+    }
+    .aurora-1 {
+        width: 50vw; height: 50vw;
+        background-color: #0077ff;
+        top: -25vw; left: -25vw;
+        animation: move 15s infinite alternate ease-in-out;
+    }
+    .aurora-2 {
+        width: 60vw; height: 60vw;
+        background-color: #ff00ff;
+        bottom: -30vw; right: -30vw;
+        animation: move 20s infinite alternate-reverse ease-in-out;
+    }
+    .aurora-3 {
+        width: 40vw; height: 40vw;
+        background-color: #00ffc3;
+        bottom: 20vh; left: -20vw;
+        animation: move 18s infinite alternate ease-in-out;
+    }
+    @keyframes move {
+        from { transform: translate(0, 0) rotate(0deg); }
+        to { transform: translate(100px, 50px) rotate(30deg); }
+    }
+
+    /* Globe styles */
+    .header-container {
+        position: relative;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #globe-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        cursor: grab;
+        margin-bottom: -100px;
+    }
+    .header-text {
+        position: relative;
+        z-index: 2;
+        text-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
+</style>
+
+<!-- Three.js for 3D Globe -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const globeContainer = document.getElementById('globe-container');
+    if (globeContainer) {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, globeContainer.offsetWidth / globeContainer.offsetHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(globeContainer.offsetWidth, globeContainer.offsetHeight);
+        globeContainer.appendChild(renderer.domElement);
+
+        const geometry = new THREE.SphereGeometry(2.5, 32, 32);
+        const pointsMaterial = new THREE.PointsMaterial({
+            color: 0x0dcaf0,
+            size: 0.03,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+        });
+        const points = new THREE.Points(geometry, pointsMaterial);
+        scene.add(points);
+        
+        camera.position.z = 5;
+
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            points.rotation.y += 0.001;
+            points.rotation.y += mouseX * 0.0005;
+            points.rotation.x += mouseY * 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+             renderer.setSize(globeContainer.offsetWidth, globeContainer.offsetHeight);
+             camera.aspect = globeContainer.offsetWidth / globeContainer.offsetHeight;
+             camera.updateProjectionMatrix();
+        });
+    }
+});
+
+// Smooth scroll function
+function smoothScroll(event) {
+    event.preventDefault();
+    const target = document.querySelector('#get-started');
+    if (target) {
+        target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+</script>
 {% endblock %}
