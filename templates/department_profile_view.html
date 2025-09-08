@@ -63,7 +63,7 @@
                     </div>
                     <div class="col-sm-8">
                         <div class="border-start border-3 border-info ps-3">
-                            {{ department.description|nl2br|safe }}
+                            {{ department.description|replace('\n', '<br>')|safe }}
                         </div>
                     </div>
                 </div>
