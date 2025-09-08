@@ -68,6 +68,15 @@ def complete_student_profile():
 
     if request.method == 'POST':
         try:
+            # Handle password setting
+            password = request.form.get('password')
+            if password:
+                student.set_password(password)
+            elif not student.password_hash:
+                # If no password provided and user doesn't have one (Google OAuth), require it
+                flash('Please set a password for your account.', 'error')
+                return render_template('complete_student_profile.html', student=student, is_editing=True)
+            
             # Update student profile with form data
             student.name = request.form.get('name') or student.name
             student.phone = request.form.get('phone') or student.phone
