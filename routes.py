@@ -326,6 +326,42 @@ def edit_internship(internship_id):
     
     return render_template('create_internship.html', internship=internship, is_editing=True)
 
+@app.route('/internship/delete/<int:internship_id>', methods=['POST'])
+def delete_internship(internship_id):
+    """Delete internship"""
+    if session.get('user_type') != 'department':
+        return redirect(url_for('index'))
+    
+    # Get the internship and verify ownership
+    internship = Internship.query.get_or_404(internship_id)
+    if internship.department_id != session['user_id']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('department_dashboard'))
+    
+    try:
+        # Check if there are any applications for this internship
+        applications_count = Application.query.filter_by(internship_id=internship_id).count()
+        
+        if applications_count > 0:
+            flash(f'Cannot delete internship. It has {applications_count} applications.', 'error')
+            return redirect(url_for('edit_internship', internship_id=internship_id))
+        
+        # Delete related matches first
+        Match.query.filter_by(internship_id=internship_id).delete()
+        
+        # Delete the internship
+        db.session.delete(internship)
+        db.session.commit()
+        
+        flash('Internship deleted successfully!', 'success')
+        return redirect(url_for('department_dashboard'))
+        
+    except Exception as e:
+        logging.error(f"Error deleting internship: {e}")
+        flash('Failed to delete internship. Please try again.', 'error')
+        db.session.rollback()
+        return redirect(url_for('edit_internship', internship_id=internship_id))
+
 @app.route('/student/generate-matches')
 def generate_matches():
     """Generate matches for current student"""
