@@ -13,7 +13,7 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Framework**: Flask web framework with SQLAlchemy ORM
 - **Database**: SQLite for development with PostgreSQL support via environment configuration
-- **Models**: Three main entities - Student, Company, and Internship with a Match relationship table
+- **Models**: Three main entities - Student, Department, and Internship with a Match relationship table
 - **Authentication**: Session-based authentication using Werkzeug password hashing
 - **Deployment**: WSGI-ready with ProxyFix middleware for production deployment
 
@@ -32,7 +32,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Model Design
 - **Student Profiles**: Comprehensive academic information, skills tracking, location preferences, and affirmative action data
-- **Company Profiles**: Industry sectors, company size, location, and contact information
+- **Department Profiles**: Ministry sectors, department type, location, and contact information
 - **Internship Listings**: Detailed role descriptions, requirements, location, duration, and stipend information
 - **Match Records**: Stores computed compatibility scores and matching criteria
 
