@@ -211,7 +211,7 @@ function enhanceInterestButtons() {
             button.classList.add('btn-success');
             
             // Show success message
-            showNotification('Interest submitted successfully! The company will be notified.', 'success');
+            showNotification('Interest submitted successfully! The department will be notified.', 'success');
         }, 1500);
     };
 }
