@@ -298,8 +298,8 @@ class Application(db.Model):
     applied_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Company Response
-    company_notes = db.Column(db.Text)
+    # Department Response
+    department_notes = db.Column(db.Text)
     interview_date = db.Column(db.DateTime)
     response_date = db.Column(db.DateTime)
     
