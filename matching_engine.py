@@ -37,7 +37,7 @@ class InternshipMatchingEngine:
             
             # Calculate cosine similarity
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-            return min(similarity, 1.0)
+            return float(min(similarity, 1.0))
             
         except Exception as e:
             logging.error(f"Error calculating skills similarity: {e}")
@@ -222,7 +222,7 @@ class InternshipMatchingEngine:
                     'affirmative_action': 0.05
                 }
                 
-                overall_score = (
+                overall_score = float(
                     skills_score * weights['skills'] +
                     academic_score * weights['academic'] +
                     location_score * weights['location'] +
@@ -235,11 +235,11 @@ class InternshipMatchingEngine:
                     match = Match(
                         student_id=student_id,
                         internship_id=internship.id,
-                        overall_score=overall_score,
-                        skills_score=skills_score,
-                        location_score=location_score,
-                        academic_score=academic_score,
-                        affirmative_action_score=affirmative_action_score
+                        overall_score=float(overall_score),
+                        skills_score=float(skills_score),
+                        location_score=float(location_score),
+                        academic_score=float(academic_score),
+                        affirmative_action_score=float(affirmative_action_score)
                     )
                     matches.append(match)
             
