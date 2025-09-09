@@ -34,7 +34,7 @@
                                         <div>
                                             <h5 class="mb-1">{{ application.internship.title }}</h5>
                                             <p class="mb-2 text-muted">
-                                                <strong>{{ application.internship.company.name }}</strong>
+                                                <strong>{{ application.internship.department.name }}</strong>
                                             </p>
                                         </div>
                                         {% if application.status == 'pending' %}
@@ -117,10 +117,10 @@
                                             </div>
                                             {% endif %}
                                             
-                                            {% if application.company_notes %}
+                                            {% if application.department_notes %}
                                             <div class="mb-3">
-                                                <small class="text-muted">Company Notes:</small>
-                                                <div class="small">{{ application.company_notes }}</div>
+                                                <small class="text-muted">Department Notes:</small>
+                                                <div class="small">{{ application.department_notes }}</div>
                                             </div>
                                             {% endif %}
                                         </div>
@@ -129,7 +129,7 @@
                                     {% if application.status == 'pending' %}
                                     <div class="mt-3 text-center">
                                         <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>Waiting for company review
+                                            <i class="fas fa-clock me-1"></i>Waiting for department review
                                         </small>
                                     </div>
                                     {% elif application.status == 'under_review' %}
