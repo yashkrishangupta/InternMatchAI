@@ -3,6 +3,7 @@ from extensions import db
 from models import Student, Department, Admin, Internship, Match, Application
 from matching_engine import InternshipMatchingEngine
 from oauth import create_google_flow, handle_google_login, get_google_user_info
+from datetime import datetime
 import logging
 
 bp = Blueprint('main', __name__)
@@ -20,15 +21,15 @@ def index():
         if user_type == 'student':
             user = Student.query.get(user_id)
             if user:
-                return redirect(url_for('student_dashboard'))
+                return redirect(url_for('main.student_dashboard'))
         elif user_type == 'department':
             user = Department.query.get(user_id)
             if user:
-                return redirect(url_for('department_dashboard'))
+                return redirect(url_for('main.department_dashboard'))
         elif user_type == 'admin':
             user = Admin.query.get(user_id)
             if user:
-                return redirect(url_for('admin_dashboard'))
+                return redirect(url_for('main.admin_dashboard'))
         
         # If user doesn't exist, clear the session
         session.clear()
@@ -39,12 +40,12 @@ def index():
 def profile():
     if session.get('user_type') != 'student':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     student = Student.query.get(session.get('user_id'))
     if not student:
         flash("Student not found.", "danger")
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     completeness_score, missing_fields = student.calculate_profile_completeness()
     
@@ -60,12 +61,12 @@ def complete_student_profile():
     """Complete or edit student profile - works for both Google OAuth and regular users"""
     if session.get('user_type') != 'student':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     student = Student.query.get(session.get('user_id'))
     if not student:
         flash("Student not found.", "danger")
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     if request.method == 'POST':
         try:
@@ -118,9 +119,9 @@ def complete_student_profile():
             
             # If user came from Google OAuth and essential fields are now filled, go to dashboard
             if session.get('google_auth') and student.institution and student.course:
-                return redirect(url_for('student_dashboard'))
+                return redirect(url_for('main.student_dashboard'))
             else:
-                return redirect(url_for('profile'))
+                return redirect(url_for('main.profile'))
 
         except Exception as e:
             logging.error(f"Error updating student profile: {e}")
@@ -145,39 +146,39 @@ def login():
             user = Admin.query.filter_by(email=email).first()
         else:
             flash('Invalid user type', 'error')
-            return redirect(url_for('index'))
+            return redirect(url_for('main.index'))
         
         if user and user.check_password(password):
             session['user_type'] = user_type
             session['user_id'] = user.id
             
             if user_type == 'student':
-                return redirect(url_for('student_dashboard'))
+                return redirect(url_for('main.student_dashboard'))
             elif user_type == 'department':
-                return redirect(url_for('department_dashboard'))
+                return redirect(url_for('main.department_dashboard'))
             else:  # admin
-                return redirect(url_for('admin_dashboard'))
+                return redirect(url_for('main.admin_dashboard'))
         else:
             flash('Invalid credentials', 'error')
     
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
 
 @bp.route('/logout')
 def logout():
     """Logout user"""
     session.clear()
     flash('Logged out successfully', 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
 
 @bp.route('/student/dashboard')
 def student_dashboard():
     """Student dashboard"""
     if session.get('user_type') != 'student':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     student = Student.query.get(session['user_id'])
     if not student:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     # Get recent matches
     matches = Match.query.filter_by(student_id=student.id)\
@@ -191,12 +192,12 @@ def department_profile():
     """Department profile view page"""
     if session.get('user_type') != 'department':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     department = Department.query.get(session.get('user_id'))
     if not department:
         flash("Department not found.", "danger")
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     completeness_score, missing_fields = department.calculate_profile_completeness()
 
@@ -211,11 +212,11 @@ def department_profile():
 def department_dashboard():
     """Department dashboard"""
     if session.get('user_type') != 'department':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     department = Department.query.get(session['user_id'])
     if not department:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     # Get department's internships
     internships = Internship.query.filter_by(department_id=department.id).all()
@@ -226,7 +227,7 @@ def department_dashboard():
 def create_internship():
     """Create new internship"""
     if session.get('user_type') != 'department':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     if request.method == 'POST':
         try:
@@ -288,7 +289,7 @@ def create_internship():
             db.session.commit()
             
             flash('Internship created successfully!', 'success')
-            return redirect(url_for('department_dashboard'))
+            return redirect(url_for('main.department_dashboard'))
             
         except Exception as e:
             logging.error(f"Error creating internship: {e}")
@@ -301,13 +302,13 @@ def create_internship():
 def edit_internship(internship_id):
     """Edit existing internship"""
     if session.get('user_type') != 'department':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     # Get the internship and verify ownership
     internship = Internship.query.get_or_404(internship_id)
     if internship.department_id != session['user_id']:
         flash('Access denied.', 'error')
-        return redirect(url_for('department_dashboard'))
+        return redirect(url_for('main.department_dashboard'))
     
     if request.method == 'POST':
         try:
@@ -358,13 +359,13 @@ def edit_internship(internship_id):
 def delete_internship(internship_id):
     """Delete internship"""
     if session.get('user_type') != 'department':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     # Get the internship and verify ownership
     internship = Internship.query.get_or_404(internship_id)
     if internship.department_id != session['user_id']:
         flash('Access denied.', 'error')
-        return redirect(url_for('department_dashboard'))
+        return redirect(url_for('main.department_dashboard'))
     
     try:
         # Check if there are any applications for this internship
@@ -382,7 +383,7 @@ def delete_internship(internship_id):
         db.session.commit()
         
         flash('Internship deleted successfully!', 'success')
-        return redirect(url_for('department_dashboard'))
+        return redirect(url_for('main.department_dashboard'))
         
     except Exception as e:
         logging.error(f"Error deleting internship: {e}")
@@ -394,25 +395,25 @@ def delete_internship(internship_id):
 def generate_matches():
     """Generate matches for current student"""
     if session.get('user_type') != 'student':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     try:
         student_id = session['user_id']
         matches = matching_engine.generate_matches_for_student(student_id)
         
         flash(f'Generated {len(matches)} new matches!', 'success')
-        return redirect(url_for('view_matches'))
+        return redirect(url_for('main.view_matches'))
         
     except Exception as e:
         logging.error(f"Error generating matches: {e}")
         flash('Failed to generate matches. Please try again.', 'error')
-        return redirect(url_for('student_dashboard'))
+        return redirect(url_for('main.student_dashboard'))
 
 @bp.route('/student/matches')
 def view_matches():
     """View all matches for current student"""
     if session.get('user_type') != 'student':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     student_id = session['user_id']
     matches = Match.query.filter_by(student_id=student_id)\
@@ -424,7 +425,7 @@ def view_matches():
 def apply_internship(internship_id):
     """Apply to an internship"""
     if session.get('user_type') != 'student':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     try:
         student_id = session['user_id']
@@ -437,7 +438,7 @@ def apply_internship(internship_id):
         
         if existing_application:
             flash('You have already applied to this internship', 'warning')
-            return redirect(url_for('view_matches'))
+            return redirect(url_for('main.view_matches'))
         
         # Get form data
         cover_letter = request.form.get('cover_letter', '')
@@ -457,19 +458,19 @@ def apply_internship(internship_id):
         db.session.commit()
         
         flash('Application submitted successfully!', 'success')
-        return redirect(url_for('view_applications'))
+        return redirect(url_for('main.view_applications'))
         
     except Exception as e:
         logging.error(f"Error applying to internship: {e}")
         flash('Failed to submit application. Please try again.', 'error')
         db.session.rollback()
-        return redirect(url_for('view_matches'))
+        return redirect(url_for('main.view_matches'))
 
 @bp.route('/student/applications')
 def view_applications():
     """View all applications for current student"""
     if session.get('user_type') != 'student':
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     student_id = session['user_id']
     applications = Application.query.filter_by(student_id=student_id)\
@@ -496,11 +497,11 @@ def google_auth():
     # Block Google authentication for departments
     if user_type == 'department':
         flash('Google authentication is not available for departments. Please use email/password login.', 'warning')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
         
     if user_type not in ['student']:
         flash('Invalid user type', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     # Store user type in session for callback
     session['oauth_user_type'] = user_type
@@ -508,7 +509,7 @@ def google_auth():
     flow = create_google_flow()
     if not flow:
         flash('Google authentication is not configured. Please contact administrator.', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     authorization_url, state = flow.authorization_url(
         access_type='offline',
@@ -525,14 +526,14 @@ def oauth_callback():
     # Verify state parameter
     if 'oauth_state' not in session or request.args.get('state') != session['oauth_state']:
         flash('Invalid authentication state', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     user_type = session.get('oauth_user_type', 'student')
     
     flow = create_google_flow()
     if not flow:
         flash('Authentication configuration error', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     try:
         # Get the authorization code and exchange for tokens
@@ -544,41 +545,41 @@ def oauth_callback():
         
         if not user_info:
             flash('Failed to get user information from Google', 'error')
-            return redirect(url_for('index'))
+            return redirect(url_for('main.index'))
         
         # Handle login/registration
-        success, user = handle_google_login(user_info, user_type)
+        success, user_obj = handle_google_login(user_info, user_type)
         
         if success:
             session['user_type'] = user_type
-            session['user_id'] = user.id
+            session['user_id'] = user_obj.id
             session['google_auth'] = True  # mark as logged in via Google
         
             # Check if this is a new user or profile is incomplete
             if user_type == "student":
                 # Check if essential profile fields are missing
-                if not user.institution or not user.course:
+                if not user_obj.institution or not user_obj.course:
                     flash('Welcome! Please complete your profile to get started.', 'info')
-                    return redirect(url_for('complete_student_profile'))
+                    return redirect(url_for('main.complete_student_profile'))
             elif user_type == "department":
                 # Check if essential profile fields are missing  
-                if not user.ministry:
+                if not user_obj.ministry:
                     flash('Welcome! Please complete your department profile to start posting internships.', 'info')
-                    return redirect(url_for('complete_department_profile'))
+                    return redirect(url_for('main.complete_department_profile'))
         
             # Profile is complete → go to dashboard
-            flash(f"Welcome back, {user.name}!", "success")
+            flash(f"Welcome back, {user_obj.name}!", "success")
             return redirect(url_for(f"{user_type}_dashboard"))
 
         else:
             flash('Authentication failed. Please try again.', 'error')
-            return redirect(url_for('index'))
+            return redirect(url_for('main.index'))
 
             
     except Exception as e:
         logging.error(f"OAuth callback error: {e}")
         flash('Authentication failed. Please try again.', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     finally:
         # Clean up session
@@ -590,12 +591,12 @@ def complete_department_profile():
     """Complete or edit department profile"""
     if session.get('user_type') != 'department':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     department = Department.query.get(session.get('user_id'))
     if not department:
         flash("Department not found.", "danger")
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     if request.method == 'POST':
         try:
@@ -610,7 +611,7 @@ def complete_department_profile():
             
             db.session.commit()
             flash('Profile updated successfully!', 'success')
-            return redirect(url_for('department_profile'))
+            return redirect(url_for('main.department_profile'))
             
         except Exception as e:
             logging.error(f"Error updating department profile: {e}")
@@ -659,9 +660,20 @@ def internship_applications(internship_id):
 def view_student_profile(student_id):
     """View a student's profile for application review"""
     if session.get('user_type') != 'department':
+        flash('Access denied. Only departments can view student profiles.', 'error')
         return redirect(url_for('main.index'))
     
     student = Student.query.get_or_404(student_id)
+    
+    # Verify that the department has applications from this student for their internships
+    department_id = session['user_id']
+    has_application = Application.query.join(Internship)\
+                                     .filter(Internship.department_id == department_id,
+                                            Application.student_id == student_id).first()
+    
+    if not has_application:
+        flash('Access denied. You can only view profiles of students who applied to your internships.', 'error')
+        return redirect(url_for('main.department_dashboard'))
     
     # Calculate profile completeness
     completeness_score, missing_fields = student.calculate_profile_completeness()
@@ -676,13 +688,14 @@ def view_student_profile(student_id):
 def update_application_status(application_id):
     """Update application status and send message to student"""
     if session.get('user_type') != 'department':
+        flash('Access denied. Only departments can manage applications.', 'error')
         return redirect(url_for('main.index'))
     
     application = Application.query.get_or_404(application_id)
     
     # Verify that this application belongs to the department's internship
     if application.internship.department_id != session['user_id']:
-        flash('Access denied.', 'error')
+        flash('Access denied. You can only manage applications for your own internships.', 'error')
         return redirect(url_for('main.department_dashboard'))
     
     try:
@@ -691,14 +704,27 @@ def update_application_status(application_id):
         department_notes = request.form.get('department_notes', '')
         
         if new_status in ['pending', 'under_review', 'shortlisted', 'accepted', 'rejected']:
+            # Handle position tracking before changing status
+            old_status = application.status
+            internship = application.internship
+            
+            # Update position count based on status change
+            if old_status == 'accepted' and new_status != 'accepted':
+                # Moving away from accepted - decrement filled positions
+                if internship.filled_positions and internship.filled_positions > 0:
+                    internship.filled_positions -= 1
+            elif old_status != 'accepted' and new_status == 'accepted':
+                # Moving to accepted - increment filled positions (check capacity)
+                current_filled = internship.filled_positions or 0
+                if current_filled >= internship.total_positions:
+                    flash(f'Cannot accept more students. All {internship.total_positions} positions are filled.', 'error')
+                    return redirect(url_for('main.internship_applications', internship_id=internship.id))
+                internship.filled_positions = current_filled + 1
+            
+            # Update application details
             application.status = new_status
             application.department_notes = department_notes
             application.response_date = datetime.utcnow()
-            
-            # If accepting, update filled positions
-            if new_status == 'accepted':
-                internship = application.internship
-                internship.filled_positions = (internship.filled_positions or 0) + 1
             
             db.session.commit()
             
@@ -719,7 +745,7 @@ def update_application_status(application_id):
         flash('Failed to update application status. Please try again.', 'error')
         db.session.rollback()
     
-    return redirect(url_for('main.internship_applications', internship_id=application.internship_id))
+    return redirect(url_for('main.internship_applications', internship_id=application.internship.id))
 
 # Admin Routes
 @bp.route('/admin/dashboard')
@@ -727,11 +753,11 @@ def admin_dashboard():
     """Admin dashboard"""
     if session.get('user_type') != 'admin':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     admin = Admin.query.get(session['user_id'])
     if not admin:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     # Get statistics
     total_students = Student.query.count()
@@ -755,7 +781,7 @@ def manage_departments():
     """Create and manage departments"""
     if session.get('user_type') != 'admin':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     if request.method == 'POST':
         try:
@@ -774,7 +800,7 @@ def manage_departments():
             existing_dept = Department.query.filter_by(email=email).first()
             if existing_dept:
                 flash('Email already exists', 'error')
-                return redirect(url_for('manage_departments'))
+                return redirect(url_for('main.manage_departments'))
             
             # Create department
             department = Department(
@@ -810,7 +836,7 @@ def toggle_department_status(dept_id):
     """Toggle department active status"""
     if session.get('user_type') != 'admin':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     department = Department.query.get_or_404(dept_id)
     department.is_active = not department.is_active
@@ -824,14 +850,14 @@ def toggle_department_status(dept_id):
         flash('Failed to update department status.', 'error')
         db.session.rollback()
     
-    return redirect(url_for('manage_departments'))
+    return redirect(url_for('main.manage_departments'))
 
 @bp.route('/admin/departments/<int:dept_id>/delete', methods=['POST'])
 def delete_department(dept_id):
     """Delete department"""
     if session.get('user_type') != 'admin':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     department = Department.query.get_or_404(dept_id)
     
@@ -840,7 +866,7 @@ def delete_department(dept_id):
         active_internships = Internship.query.filter_by(department_id=dept_id, is_active=True).count()
         if active_internships > 0:
             flash(f'Cannot delete department with {active_internships} active internships.', 'error')
-            return redirect(url_for('manage_departments'))
+            return redirect(url_for('main.manage_departments'))
         
         db.session.delete(department)
         db.session.commit()
@@ -851,14 +877,14 @@ def delete_department(dept_id):
         flash('Failed to delete department.', 'error')
         db.session.rollback()
     
-    return redirect(url_for('manage_departments'))
+    return redirect(url_for('main.manage_departments'))
 
 @bp.route('/admin/generate-all-matches')
 def generate_all_matches():
     """Admin function to generate matches for all students"""
     if session.get('user_type') != 'admin':
         flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
         
     try:
         total_matches = matching_engine.generate_all_matches()
@@ -868,7 +894,7 @@ def generate_all_matches():
         logging.error(f"Error generating all matches: {e}")
         flash('Failed to generate matches. Please try again.', 'error')
     
-    return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('main.admin_dashboard'))
 
 @bp.route('/internship/<int:internship_id>')
 def view_internship(internship_id):
