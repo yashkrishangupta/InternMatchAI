@@ -15,6 +15,19 @@
     --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    /* Admin-specific colors from the image */
+    --admin-card-blue: #446CFF;
+    --admin-card-green: #26A65B;
+    --admin-card-cyan: #00BFFF;
+    --admin-card-yellow: #FFC107;
+    
+    /* Admin Actions button colors (solid as requested) */
+    --btn-manage-depts: #7B68EE;
+    --btn-generate-matches: #26A65B;
+
+    /* Light theme text and icon colors for contrast */
+    --light-theme-header: #1f2937;
+    --light-theme-text: #4b5563;
 }
 
 /* Body and general styling */
@@ -85,7 +98,11 @@ body::before {
     border-radius: 16px 16px 0 0 !important;
     border-bottom: 1px solid #ddd;
     background: rgba(255,255,255,0.9) !important;
-    color: #1e3a8a !important;
+    color: var(--light-theme-header) !important;
+}
+
+.card-header h4, .card-header h5, .card-header h6 {
+    color: var(--light-theme-header) !important;
 }
 
 /* Enhanced buttons */
@@ -189,57 +206,10 @@ body::before {
     margin-bottom: 0.5rem;
 }
 
-/* Alerts - Light Blue Theme */
+/* Alerts */
 .alert {
-    border-radius: 12px;
+    border-radius: 10px;
     border: none;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    background: rgba(255,255,255,0.95) !important;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-/* Success Messages - Light Green with Blue Accents */
-.alert-success {
-    background: linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%) !important;
-    color: #065f46 !important;
-    border-left: 4px solid #10b981 !important;
-}
-
-/* Error/Danger Messages - Light Red with Blue Undertones */
-.alert-danger, .alert-error {
-    background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%) !important;
-    color: #991b1b !important;
-    border-left: 4px solid #ef4444 !important;
-}
-
-/* Warning Messages - Light Blue Warning */
-.alert-warning {
-    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%) !important;
-    color: #92400e !important;
-    border-left: 4px solid #f59e0b !important;
-}
-
-/* Info Messages - Match Main Theme */
-.alert-info {
-    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
-    color: #1e40af !important;
-    border-left: 4px solid #3b82f6 !important;
-}
-
-/* Primary Messages - Deep Blue */
-.alert-primary {
-    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
-    color: #1e3a8a !important;
-    border-left: 4px solid #1e40af !important;
-}
-
-/* Secondary Messages - Neutral with Blue Undertones */
-.alert-secondary {
-    background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%) !important;
-    color: #475569 !important;
-    border-left: 4px solid #64748b !important;
 }
 
 /* Match cards */
@@ -265,6 +235,14 @@ body::before {
 
 /* Enhanced utilities */
 .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.text-gradient-primary {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -413,4 +391,82 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
+}
+
+/* Admin Dashboard Specific styles */
+.card.bg-primary {
+    background-color: var(--admin-card-blue) !important;
+    border-color: var(--admin-card-blue) !important;
+    color: #fff !important;
+}
+
+.card.bg-success {
+    background-color: var(--admin-card-green) !important;
+    border-color: var(--admin-card-green) !important;
+    color: #fff !important;
+}
+
+.card.bg-info {
+    background-color: var(--admin-card-cyan) !important;
+    border-color: var(--admin-card-cyan) !important;
+    color: #fff !important;
+}
+
+.card.bg-warning {
+    background-color: var(--admin-card-yellow) !important;
+    border-color: var(--admin-card-yellow) !important;
+    color: #fff !important;
+}
+
+/* Button styles from the image */
+.btn-manage-departments {
+    background-color: var(--btn-manage-depts);
+    border: none;
+    color: white;
+}
+
+.btn-manage-departments:hover {
+    background-color: #6A5ACD;
+    border: none;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-generate-matches {
+    background-color: var(--btn-generate-matches);
+    border: none;
+    color: white;
+}
+
+.btn-generate-matches:hover {
+    background-color: #218838;
+    border: none;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.card.bg-primary i, .card.bg-primary h3,
+.card.bg-success i, .card.bg-success h3,
+.card.bg-info i, .card.bg-info h3,
+.card.bg-warning i, .card.bg-warning h3 {
+    color: #fff !important;
+    background-image: none !important;
+    -webkit-text-fill-color: #fff !important;
+    animation: none !important;
+}
+
+.fa-2x {
+    font-size: 2.5rem;
+}
+
+/* New CSS for better visibility on light background */
+.card .card-header i, .card .card-header h4, .card .card-header h5, .card .card-header h6,
+.card .text-muted, .card .text-muted strong, .card .text-gradient-primary, 
+.card .animated-number-stat, .card strong, .card i, .card small {
+    color: var(--light-theme-text) !important;
+    background-image: none !important;
+    -webkit-text-fill-color: var(--light-theme-text) !important;
+    animation: none !important;
 }
