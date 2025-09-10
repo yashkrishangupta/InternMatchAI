@@ -7,37 +7,37 @@
     <div class="col-lg-8">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">
+                <h4 class="mb-0" style="color:#000;">
                     <i class="fas fa-landmark me-2"></i>{{ department.name }}
                 </h4>
                 <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Create New Internship
                 </a>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="color:#000;">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Ministry:</strong></p>
-                        <p class="text-muted">{{ department.ministry or 'Not specified' }}</p>
+                        <p style="color:#000;">{{ department.ministry or 'Not specified' }}</p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Department Type:</strong></p>
-                        <p class="text-muted">{{ department.department_type or 'Not specified' }}</p>
+                        <p style="color:#000;">{{ department.department_type or 'Not specified' }}</p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Location:</strong></p>
-                        <p class="text-muted">{{ department.location or 'Not specified' }}</p>
+                        <p style="color:#000;">{{ department.location or 'Not specified' }}</p>
                     </div>
                     {% if department.contact_person %}
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Contact Person:</strong></p>
-                        <p class="text-muted">{{ department.contact_person }}</p>
+                        <p style="color:#000;">{{ department.contact_person }}</p>
                     </div>
                     {% endif %}
                     {% if department.description %}
                     <div class="col-12">
                         <p class="mb-1"><strong>Description:</strong></p>
-                        <p class="text-muted">{{ department.description }}</p>
+                        <p style="color:#000;">{{ department.description }}</p>
                     </div>
                     {% endif %}
                 </div>
@@ -46,19 +46,19 @@
 
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
+                <h5 class="mb-0" style="color:#000;">
                     <i class="fas fa-briefcase me-2"></i>Your Internships
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="color:#000;">
                 {% if internships %}
                     {% for internship in internships %}
-                    <div class="border rounded p-3 mb-3">
+                    <div class="border rounded p-3 mb-3" style="color:#000;">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <h6 class="mb-1">{{ internship.title }}</h6>
-                                <p class="mb-1 text-muted">{{ internship.sector }}</p>
-                                <p class="mb-0 small">
+                                <h6 class="mb-1" style="color:#000;">{{ internship.title }}</h6>
+                                <p class="mb-1" style="color:#000;">{{ internship.sector }}</p>
+                                <p class="mb-0 small" style="color:#000;">
                                     <i class="fas fa-map-marker-alt me-1"></i>{{ internship.location or 'Location not specified' }}
                                     {% if internship.duration_months %}
                                         <span class="ms-3"><i class="fas fa-clock me-1"></i>{{ internship.duration_months }} months</span>
@@ -77,7 +77,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="mb-2">
-                                    <small class="text-muted">
+                                    <small style="color:#000;">
                                         {{ internship.filled_positions }}/{{ internship.total_positions }} filled
                                     </small>
                                 </div>
@@ -91,10 +91,10 @@
                     </div>
                     {% endfor %}
                 {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No internships yet</h5>
-                        <p class="text-muted">Create your first internship posting to get started.</p>
+                    <div class="text-center py-4" style="color:#000;">
+                        <i class="fas fa-briefcase fa-3x mb-3" style="color:#000;"></i>
+                        <h5 style="color:#000;">No internships yet</h5>
+                        <p style="color:#000;">Create your first internship posting to get started.</p>
                         <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Create Internship
                         </a>
@@ -107,22 +107,22 @@
     <div class="col-lg-4">
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">
+                <h5 class="mb-0" style="color:#000;">
                     <i class="fas fa-chart-bar me-2"></i>Department Statistics
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="color:#000;">
                 <div class="row g-3 text-center">
                     <div class="col-6">
                         <div class="border rounded p-3">
                             <h3 class="text-primary mb-1">{{ internships|length }}</h3>
-                            <small class="text-muted">Total Internships</small>
+                            <small style="color:#000;">Total Internships</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="border rounded p-3">
                             <h3 class="text-success mb-1">{{ internships|selectattr('is_active')|list|length }}</h3>
-                            <small class="text-muted">Active Postings</small>
+                            <small style="color:#000;">Active Postings</small>
                         </div>
                     </div>
                 </div>
@@ -131,11 +131,11 @@
 
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
+                <h5 class="mb-0" style="color:#000;">
                     <i class="fas fa-cog me-2"></i>Quick Actions
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="color:#000;">
                 <div class="d-grid gap-2">
                     <a href="{{ url_for('create_internship') }}" class="btn btn-primary">
                         <i class="fas fa-plus me-2"></i>Create New Internship
