@@ -62,7 +62,7 @@ def create_google_flow():
 
 def get_redirect_uri():
     """Get OAuth redirect URI (works for local + deployment)"""
-    return url_for("oauth_callback", _external=True)
+    return url_for("main.oauth_callback", _external=True)
 
 def get_google_user_info(access_token):
     """Fetch user info from Google API"""
