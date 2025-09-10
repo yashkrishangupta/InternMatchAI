@@ -3,6 +3,58 @@
 {% block title %}My Applications - AI Internship Matching{% endblock %}
 
 {% block content %}
+
+<style>
+/* Ensure labels like Applied:, Last Updated:, Interview: are dark */
+.card-body small.text-muted {
+    color: #222 !important;
+    font-weight: 600;
+}
+
+/* Keep the actual values bold & darker */
+.card-body .fw-bold {
+    color: #000 !important;
+}
+
+/* Interview date highlight stays blue */
+.card-body .fw-bold.text-info {
+    color: #0dcaf0 !important; 
+}
+
+/* Override Bootstrap muted text */
+.text-muted {
+    color: #333 !important; /* Dark gray for visibility */
+    font-weight: 500;
+}
+
+/* Ensure card titles and strong text are bold & dark */
+.card-body strong,
+.card-body h5,
+.card-body h6 {
+    color: #000 !important;
+    font-weight: 600;
+}
+
+/* Ensure small texts inside cards are readable */
+.card .card-body .small,
+.card .card-body span,
+.card .card-body p {
+    color: #000 !important;
+    font-weight: 500;
+}
+
+/* Badges */
+.badge.bg-warning {
+    color: #000 !important;
+    font-weight: bold;
+}
+
+/* Status card fix */
+.card.bg-light .card-body {
+    color: #000 !important;
+}
+</style>
+
 <div class="row">
     <div class="col-12">
         <div class="card mb-4">
@@ -69,7 +121,7 @@
                                         {% endif %}
                                         {% if application.internship.stipend %}
                                         <div class="col-auto">
-                                            <i class="fas fa-rupee-sign text-muted me-1"></i>
+                                            <i class="fas fa-indian-rupee-sign text-muted me-1"></i>
                                             <span class="small">{{ "%.0f"|format(application.internship.stipend) }}/month</span>
                                         </div>
                                         {% endif %}
@@ -186,4 +238,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
