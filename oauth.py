@@ -3,7 +3,8 @@ import os
 import requests
 from flask import session, request, redirect, url_for
 from google_auth_oauthlib.flow import Flow
-from app import app, db
+from flask import current_app
+from extensions import db
 from models import Student, Department
 
 # Google OAuth configuration
