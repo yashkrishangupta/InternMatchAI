@@ -112,9 +112,6 @@ def handle_google_login(user_info, user_type):
 
     try:
         db.session.commit()
-        session["user_type"] = user_type
-        session["user_id"] = user.id
-        session["google_auth"] = True
         return True, user
     except Exception as e:
         db.session.rollback()
