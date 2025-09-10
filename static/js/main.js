@@ -102,29 +102,35 @@ function createProgressModal() {
     modal.className = 'modal fade';
     modal.innerHTML = `
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
+            <div class="modal-content" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px;">
+                <div class="modal-header" style="background: linear-gradient(90deg, #75b8f7, #6ac0f1); border-bottom: none; border-radius: 16px 16px 0 0; color: white;">
+                    <h5 class="modal-title" style="color: white; font-weight: 600;">
                         <i class="fas fa-robot me-2"></i>AI Matching in Progress
                     </h5>
                 </div>
-                <div class="modal-body text-center">
+                <div class="modal-body text-center" style="padding: 2rem;">
                     <div class="mb-3">
-                        <i class="fas fa-brain fa-3x text-info mb-3"></i>
-                        <p>Our AI is analyzing your profile and finding the best matches...</p>
+                        <i class="fas fa-brain fa-3x mb-3" style="color: #3b82f6; animation: pulse 2s infinite;"></i>
+                        <p style="color: #1f2937; font-weight: 500; font-size: 1.1rem;">Our AI is analyzing your profile and finding the best matches...</p>
                     </div>
-                    <div class="progress" style="height: 20px;">
+                    <div class="progress" style="height: 24px; background-color: #e5e7eb; border-radius: 12px; overflow: hidden;">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                             role="progressbar" style="width: 0%">0%</div>
+                             role="progressbar" style="width: 0%; background: linear-gradient(90deg, #3b82f6, #1d4ed8); border-radius: 12px; font-weight: 600; color: white;">0%</div>
                     </div>
                     <div class="mt-3">
-                        <small class="text-muted">
+                        <small style="color: #4b5563; font-weight: 500;">
                             Analyzing skills • Checking preferences • Applying fairness criteria
                         </small>
                     </div>
                 </div>
             </div>
         </div>
+        <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        </style>
     `;
     return modal;
 }
