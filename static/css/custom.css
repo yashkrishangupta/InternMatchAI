@@ -105,6 +105,25 @@ body::before {
     color: var(--light-theme-header) !important;
 }
 
+/* --- Start of New Table Specific Styles --- */
+.table {
+    /* Ensures the table itself doesn't have a background to show the card background */
+    background-color: transparent;
+    border-collapse: collapse;
+}
+
+.table thead {
+    /* Creates the black border below the header */
+    border-bottom: 2px solid #000;
+}
+
+.table th,
+.table td {
+    /* Removes all internal borders between cells */
+    border: none !important;
+}
+/* --- End of New Table Specific Styles --- */
+
 /* Enhanced buttons */
 .btn {
     border-radius: 12px;
@@ -206,10 +225,32 @@ body::before {
     margin-bottom: 0.5rem;
 }
 
+/* New custom class for the update form row to prevent wrapping */
+.update-form {
+    display: flex;
+    flex-wrap: nowrap; /* Prevents wrapping */
+    align-items: center;
+    gap: 0.5rem; /* Re-adds the gap between elements */
+}
+
+.update-form .form-control {
+    flex-grow: 1; /* Allows the input to take up available space */
+}
+
+.update-form .form-select, .update-form .btn {
+    width: auto; /* Ensures elements don't stretch */
+    flex-shrink: 0; /* Prevents them from shrinking when space is tight */
+}
 /* Alerts */
 .alert {
-    border-radius: 10px;
-    border: none;
+    border-radius: 12px !important;
+    border: none !important;
+    padding: 1rem 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    font-weight: 500 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 /* Match cards */
@@ -469,4 +510,26 @@ footer {
     background-image: none !important;
     -webkit-text-fill-color: var(--light-theme-text) !important;
     animation: none !important;
+}
+
+/* --- Force table to light theme and remove all borders --- */
+.card .table, 
+.card .table th, 
+.card .table td {
+    background-color: transparent !important; /* Forces the table to use the card's background */
+    color: #1f2937 !important; /* Sets the text color to a dark shade */
+    border: none !important; /* Removes all internal and external borders */
+}
+
+.card .table th {
+    font-weight: 600; /* Makes header text slightly bolder for emphasis */
+}
+
+/* Optional: Add a subtle border to separate the header row */
+.card .table thead {
+    border-bottom: 1px solid #ddd !important;
+}
+/* Fix visibility for text-muted on the main page */
+.text-muted {
+    color: var(--light-theme-text) !important;
 }
