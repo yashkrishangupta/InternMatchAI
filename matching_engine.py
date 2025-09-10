@@ -9,7 +9,6 @@ from models import Student, Internship, Match
 
 class InternshipMatchingEngine:
     def __init__(self):
-        self.tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_features=1000)
         self.scaler = StandardScaler()
         
     def preprocess_skills(self, skills_text):
@@ -31,9 +30,10 @@ class InternshipMatchingEngine:
             if not student_text or not internship_text:
                 return 0.0
             
-            # Create TF-IDF vectors
+            # Create TF-IDF vectors - use fresh vectorizer each time to avoid fitting conflicts
             texts = [student_text, internship_text]
-            tfidf_matrix = self.tfidf_vectorizer.fit_transform(texts)
+            vectorizer = TfidfVectorizer(stop_words='english', max_features=1000)
+            tfidf_matrix = vectorizer.fit_transform(texts)
             
             # Calculate cosine similarity
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
@@ -194,7 +194,7 @@ class InternshipMatchingEngine:
                 
                 # Calculate individual scores
                 skills_score = self.calculate_skills_similarity(
-                    student.technical_skills + " " + (student.soft_skills or ""),
+                    (student.technical_skills or "") + " " + (student.soft_skills or ""),
                     internship.required_skills
                 )
                 
