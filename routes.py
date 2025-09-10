@@ -569,7 +569,12 @@ def oauth_callback():
         
             # Profile is complete → go to dashboard
             flash(f"Welcome back, {user_obj.name}!", "success")
-            return redirect(url_for(f"{user_type}_dashboard"))
+            if user_type == 'student':
+                return redirect(url_for('main.student_dashboard'))
+            elif user_type == 'department':
+                return redirect(url_for('main.department_dashboard'))
+            else:
+                return redirect(url_for('main.index'))
 
         else:
             flash('Authentication failed. Please try again.', 'error')
