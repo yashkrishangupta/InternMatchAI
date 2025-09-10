@@ -1,13 +1,14 @@
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
-from app import app, db
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
+from extensions import db
 from models import Student, Department, Admin, Internship, Match, Application
 from matching_engine import InternshipMatchingEngine
 from oauth import create_google_flow, handle_google_login, get_google_user_info
 import logging
 
+bp = Blueprint('main', __name__)
 matching_engine = InternshipMatchingEngine()
 
-@app.route('/')
+@bp.route('/')
 def index():
     """Home page with registration options or redirect to dashboard if already logged in"""
     # Check if user is already logged in
@@ -34,7 +35,7 @@ def index():
     
     return render_template('index.html')
 
-@app.route('/student/profile')
+@bp.route('/student/profile')
 def profile():
     if session.get('user_type') != 'student':
         flash('Access denied.', 'danger')
@@ -54,7 +55,7 @@ def profile():
         missing_fields=missing_fields
     )
 
-@app.route('/complete_student_profile', methods=['GET', 'POST'])
+@bp.route('/complete_student_profile', methods=['GET', 'POST'])
 def complete_student_profile():
     """Complete or edit student profile - works for both Google OAuth and regular users"""
     if session.get('user_type') != 'student':
@@ -128,7 +129,7 @@ def complete_student_profile():
 
     return render_template('complete_student_profile.html', student=student, is_editing=True)
 
-@app.route('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Login for students, departments, and admins"""
     if request.method == 'POST':
@@ -161,14 +162,14 @@ def login():
     
     return redirect(url_for('index'))
 
-@app.route('/logout')
+@bp.route('/logout')
 def logout():
     """Logout user"""
     session.clear()
     flash('Logged out successfully', 'success')
     return redirect(url_for('index'))
 
-@app.route('/student/dashboard')
+@bp.route('/student/dashboard')
 def student_dashboard():
     """Student dashboard"""
     if session.get('user_type') != 'student':
@@ -185,7 +186,7 @@ def student_dashboard():
     
     return render_template('student_dashboard.html', student=student, matches=matches)
 
-@app.route('/department/profile')
+@bp.route('/department/profile')
 def department_profile():
     """Department profile view page"""
     if session.get('user_type') != 'department':
@@ -206,7 +207,7 @@ def department_profile():
         missing_fields=missing_fields
     )
 
-@app.route('/department/dashboard')
+@bp.route('/department/dashboard')
 def department_dashboard():
     """Department dashboard"""
     if session.get('user_type') != 'department':
@@ -221,7 +222,7 @@ def department_dashboard():
     
     return render_template('department_dashboard.html', department=department, internships=internships)
 
-@app.route('/internship/create', methods=['GET', 'POST'])
+@bp.route('/internship/create', methods=['GET', 'POST'])
 def create_internship():
     """Create new internship"""
     if session.get('user_type') != 'department':
@@ -286,7 +287,7 @@ def create_internship():
     
     return render_template('create_internship.html')
 
-@app.route('/internship/edit/<int:internship_id>', methods=['GET', 'POST'])
+@bp.route('/internship/edit/<int:internship_id>', methods=['GET', 'POST'])
 def edit_internship(internship_id):
     """Edit existing internship"""
     if session.get('user_type') != 'department':
@@ -335,7 +336,7 @@ def edit_internship(internship_id):
     
     return render_template('create_internship.html', internship=internship, is_editing=True)
 
-@app.route('/internship/delete/<int:internship_id>', methods=['POST'])
+@bp.route('/internship/delete/<int:internship_id>', methods=['POST'])
 def delete_internship(internship_id):
     """Delete internship"""
     if session.get('user_type') != 'department':
@@ -371,7 +372,7 @@ def delete_internship(internship_id):
         db.session.rollback()
         return redirect(url_for('edit_internship', internship_id=internship_id))
 
-@app.route('/student/generate-matches')
+@bp.route('/student/generate-matches')
 def generate_matches():
     """Generate matches for current student"""
     if session.get('user_type') != 'student':
@@ -389,7 +390,7 @@ def generate_matches():
         flash('Failed to generate matches. Please try again.', 'error')
         return redirect(url_for('student_dashboard'))
 
-@app.route('/student/matches')
+@bp.route('/student/matches')
 def view_matches():
     """View all matches for current student"""
     if session.get('user_type') != 'student':
@@ -401,7 +402,7 @@ def view_matches():
     
     return render_template('matches.html', matches=matches)
 
-@app.route('/student/apply/<int:internship_id>', methods=['POST'])
+@bp.route('/student/apply/<int:internship_id>', methods=['POST'])
 def apply_internship(internship_id):
     """Apply to an internship"""
     if session.get('user_type') != 'student':
@@ -446,7 +447,7 @@ def apply_internship(internship_id):
         db.session.rollback()
         return redirect(url_for('view_matches'))
 
-@app.route('/student/applications')
+@bp.route('/student/applications')
 def view_applications():
     """View all applications for current student"""
     if session.get('user_type') != 'student':
@@ -459,17 +460,17 @@ def view_applications():
     return render_template('applications.html', applications=applications)
 
 # Error handlers
-@app.errorhandler(404)
+@bp.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
 
-@app.errorhandler(500)
+@bp.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
 
 # Google OAuth routes
-@app.route('/auth/google')
+@bp.route('/auth/google')
 def google_auth():
     """Initiate Google OAuth"""
     user_type = request.args.get('type', 'student')
@@ -500,7 +501,7 @@ def google_auth():
     session['oauth_state'] = state
     return redirect(authorization_url)
 
-@app.route('/oauth2callback')
+@bp.route('/oauth2callback')
 def oauth_callback():
     """Handle Google OAuth callback"""
     # Verify state parameter
@@ -566,7 +567,7 @@ def oauth_callback():
         session.pop('oauth_state', None)
         session.pop('oauth_user_type', None)
 
-@app.route('/complete-department-profile', methods=['GET', 'POST'])
+@bp.route('/complete-department-profile', methods=['GET', 'POST'])
 def complete_department_profile():
     """Complete or edit department profile"""
     if session.get('user_type') != 'department':
@@ -601,7 +602,7 @@ def complete_department_profile():
     return render_template('complete_department_profile.html', department=department, is_editing=True)
 
 # Admin Routes
-@app.route('/admin/dashboard')
+@bp.route('/admin/dashboard')
 def admin_dashboard():
     """Admin dashboard"""
     if session.get('user_type') != 'admin':
@@ -629,7 +630,7 @@ def admin_dashboard():
                          total_applications=total_applications,
                          recent_departments=recent_departments)
 
-@app.route('/admin/departments', methods=['GET', 'POST'])
+@bp.route('/admin/departments', methods=['GET', 'POST'])
 def manage_departments():
     """Create and manage departments"""
     if session.get('user_type') != 'admin':
@@ -684,7 +685,7 @@ def manage_departments():
     
     return render_template('admin_departments.html', departments=departments)
 
-@app.route('/admin/departments/<int:dept_id>/toggle', methods=['POST'])
+@bp.route('/admin/departments/<int:dept_id>/toggle', methods=['POST'])
 def toggle_department_status(dept_id):
     """Toggle department active status"""
     if session.get('user_type') != 'admin':
@@ -705,7 +706,7 @@ def toggle_department_status(dept_id):
     
     return redirect(url_for('manage_departments'))
 
-@app.route('/admin/departments/<int:dept_id>/delete', methods=['POST'])
+@bp.route('/admin/departments/<int:dept_id>/delete', methods=['POST'])
 def delete_department(dept_id):
     """Delete department"""
     if session.get('user_type') != 'admin':
@@ -732,7 +733,7 @@ def delete_department(dept_id):
     
     return redirect(url_for('manage_departments'))
 
-@app.route('/admin/generate-all-matches')
+@bp.route('/admin/generate-all-matches')
 def generate_all_matches():
     """Admin function to generate matches for all students"""
     if session.get('user_type') != 'admin':
@@ -749,14 +750,14 @@ def generate_all_matches():
     
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/internship/<int:internship_id>')
+@bp.route('/internship/<int:internship_id>')
 def view_internship(internship_id):
     """View internship details"""
     internship = Internship.query.get_or_404(internship_id)
     return render_template('internship_details.html', internship=internship)
 
 
-# @app.route('/setup-first-admin', methods=['GET', 'POST'])
+# @bp.route('/setup-first-admin', methods=['GET', 'POST'])
 # def setup_first_admin():
 #     # Only allow if no admins exist
 #     if Admin.query.count() > 0:
