@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}All Applications - Department Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color:#000;">
+            <i class="fas fa-file-alt me-2"></i>All Applications
+        </h2>
+        <a href="{{ url_for('main.department_dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    {% if applications %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="color:#000;">
+                    <i class="fas fa-users me-2"></i>Recent Applications ({{ applications|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="color:#000;">
+                                <th>Student</th>
+                                <th>Internship</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr style="color:#000;">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <div class="fw-bold">{{ application.student.name }}</div>
+                                            <small class="text-muted">{{ application.student.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">{{ application.internship.title }}</div>
+                                        <small class="text-muted">{{ application.internship.sector }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small>{{ application.applied_at.strftime('%d %b %Y') }}</small>
+                                </td>
+                                <td>
+                                    {% if application.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif application.status == 'under_review' %}
+                                        <span class="badge bg-info">Under Review</span>
+                                    {% elif application.status == 'shortlisted' %}
+                                        <span class="badge bg-primary">Shortlisted</span>
+                                    {% elif application.status == 'accepted' %}
+                                        <span class="badge bg-success">Accepted</span>
+                                    {% elif application.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('main.view_student_profile', student_id=application.student.id) }}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-user me-1"></i>Profile
+                                        </a>
+                                        <a href="{{ url_for('main.internship_applications', internship_id=application.internship.id) }}" 
+                                           class="btn btn-outline-secondary">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4 style="color:#000;">No Applications Yet</h4>
+            <p class="text-muted">You haven't received any applications for your internships yet.</p>
+            <a href="{{ url_for('main.create_internship') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create New Internship
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
