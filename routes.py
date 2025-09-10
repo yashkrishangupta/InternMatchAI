@@ -243,6 +243,15 @@ def create_internship():
             duration_months = request.form.get('duration_months', type=int)
             stipend = request.form.get('stipend', type=float)
             
+            # Handle application deadline
+            application_deadline = None
+            deadline_str = request.form.get('application_deadline')
+            if deadline_str:
+                try:
+                    application_deadline = datetime.strptime(deadline_str, '%Y-%m-%dT%H:%M')
+                except ValueError:
+                    pass
+            
             # Affirmative action quotas
             rural_quota = request.form.get('rural_quota', type=int, default=0)
             sc_quota = request.form.get('sc_quota', type=int, default=0)
@@ -268,6 +277,7 @@ def create_internship():
                 total_positions=total_positions,
                 duration_months=duration_months,
                 stipend=stipend,
+                application_deadline=application_deadline,
                 rural_quota=rural_quota,
                 sc_quota=sc_quota,
                 st_quota=st_quota,
@@ -313,6 +323,14 @@ def edit_internship(internship_id):
             internship.total_positions = request.form.get('total_positions', type=int) or internship.total_positions
             internship.duration_months = request.form.get('duration_months', type=int) or internship.duration_months
             internship.stipend = request.form.get('stipend', type=float) or internship.stipend
+            
+            # Handle application deadline
+            deadline_str = request.form.get('application_deadline')
+            if deadline_str:
+                try:
+                    internship.application_deadline = datetime.strptime(deadline_str, '%Y-%m-%dT%H:%M')
+                except ValueError:
+                    pass
             
             # Update affirmative action quotas
             internship.rural_quota = request.form.get('rural_quota', type=int, default=0)
@@ -600,6 +618,108 @@ def complete_department_profile():
             db.session.rollback()
     
     return render_template('complete_department_profile.html', department=department, is_editing=True)
+
+# Department Application Management Routes
+@bp.route('/department/applications')
+def department_applications():
+    """View all applications for department's internships"""
+    if session.get('user_type') != 'department':
+        return redirect(url_for('main.index'))
+    
+    department_id = session['user_id']
+    
+    # Get all applications for this department's internships
+    applications = Application.query.join(Internship)\
+                                  .filter(Internship.department_id == department_id)\
+                                  .order_by(Application.applied_at.desc()).all()
+    
+    return render_template('department_applications.html', applications=applications)
+
+@bp.route('/internship/<int:internship_id>/applications')
+def internship_applications(internship_id):
+    """View applications for a specific internship"""
+    if session.get('user_type') != 'department':
+        return redirect(url_for('main.index'))
+    
+    # Get the internship and verify ownership
+    internship = Internship.query.get_or_404(internship_id)
+    if internship.department_id != session['user_id']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('main.department_dashboard'))
+    
+    # Get applications for this internship
+    applications = Application.query.filter_by(internship_id=internship_id)\
+                                  .order_by(Application.applied_at.desc()).all()
+    
+    return render_template('internship_applications.html', 
+                         internship=internship, 
+                         applications=applications)
+
+@bp.route('/department/student/<int:student_id>')
+def view_student_profile(student_id):
+    """View a student's profile for application review"""
+    if session.get('user_type') != 'department':
+        return redirect(url_for('main.index'))
+    
+    student = Student.query.get_or_404(student_id)
+    
+    # Calculate profile completeness
+    completeness_score, missing_fields = student.calculate_profile_completeness()
+    
+    return render_template('student_profile_view.html', 
+                         student=student,
+                         completeness_score=completeness_score,
+                         missing_fields=missing_fields,
+                         from_department=True)
+
+@bp.route('/application/<int:application_id>/update', methods=['POST'])
+def update_application_status(application_id):
+    """Update application status and send message to student"""
+    if session.get('user_type') != 'department':
+        return redirect(url_for('main.index'))
+    
+    application = Application.query.get_or_404(application_id)
+    
+    # Verify that this application belongs to the department's internship
+    if application.internship.department_id != session['user_id']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('main.department_dashboard'))
+    
+    try:
+        # Update application status
+        new_status = request.form.get('status')
+        department_notes = request.form.get('department_notes', '')
+        
+        if new_status in ['pending', 'under_review', 'shortlisted', 'accepted', 'rejected']:
+            application.status = new_status
+            application.department_notes = department_notes
+            application.response_date = datetime.utcnow()
+            
+            # If accepting, update filled positions
+            if new_status == 'accepted':
+                internship = application.internship
+                internship.filled_positions = (internship.filled_positions or 0) + 1
+            
+            db.session.commit()
+            
+            status_msg = {
+                'pending': 'moved to pending',
+                'under_review': 'moved to under review',
+                'shortlisted': 'shortlisted',
+                'accepted': 'accepted',
+                'rejected': 'rejected'
+            }
+            
+            flash(f'Application {status_msg[new_status]} successfully!', 'success')
+        else:
+            flash('Invalid status provided.', 'error')
+            
+    except Exception as e:
+        logging.error(f"Error updating application status: {e}")
+        flash('Failed to update application status. Please try again.', 'error')
+        db.session.rollback()
+    
+    return redirect(url_for('main.internship_applications', internship_id=application.internship_id))
 
 # Admin Routes
 @bp.route('/admin/dashboard')
