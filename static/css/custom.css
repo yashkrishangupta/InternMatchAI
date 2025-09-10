@@ -20,7 +20,7 @@
     --admin-card-green: #26A65B;
     --admin-card-cyan: #00BFFF;
     --admin-card-yellow: #FFC107;
-    
+
     /* Admin Actions button colors (solid as requested) */
     --btn-manage-depts: #7B68EE;
     --btn-generate-matches: #26A65B;
@@ -242,15 +242,38 @@ body::before {
     flex-shrink: 0; /* Prevents them from shrinking when space is tight */
 }
 /* Alerts */
+/* Base style for all alerts */
 .alert {
-    border-radius: 12px !important;
-    border: none !important;
-    padding: 1rem 1.5rem !important;
-    margin-bottom: 1.5rem !important;
-    font-weight: 500 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-    position: relative !important;
-    overflow: hidden !important;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 500;
+  background-color: #e9f6ff; /* soft light blue background */
+  color: #084298; /* default dark blue text */
+  border-left: 6px solid; /* accent bar */
+}
+
+/* Success alert */
+.alert-success {
+  border-color: #28a745; /* green bar */
+  color: #155724; /* dark green text */
+}
+
+/* Error alert */
+.alert-danger {
+  border-color: #dc3545; /* red bar */
+  color: #721c24; /* dark red text */
+}
+
+/* Warning alert */
+.alert-warning {
+  border-color: #ffc107; /* yellow bar */
+  color: #856404; /* dark yellow text */
+}
+
+/* Info alert */
+.alert-info {
+  border-color: #0dcaf0; /* blue bar */
+  color: #084298; /* dark blue text */
 }
 
 /* Match cards */
@@ -363,7 +386,7 @@ body::before {
     .card-body {
         padding: 1rem;
     }
-    
+
     .btn-group-vertical .btn {
         margin-bottom: 0.5rem;
     }
