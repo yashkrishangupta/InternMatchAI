@@ -3,6 +3,71 @@
 {% block title %}My Matches - AI Internship Matching{% endblock %}
 
 {% block content %}
+
+<!-- Fix for Match Breakdown labels -->
+<style>
+/* Make Match Breakdown labels visible */
+.card .card-body .small {
+    color: #000 !important;   /* Black text for visibility */
+    font-weight: 600;         /* Bold for better readability */
+}
+
+.card .card-body h6 {
+    color: #000000 !important;  /* Solid black for visibility */
+    font-weight: 600;
+}
+
+.modal-content {
+    background-color: #ffffff !important; /* White background */
+    color: #000000 !important;            /* Black text */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Headings, labels, helper text */
+.modal-content h5,
+.modal-content h6,
+.modal-content label,
+.modal-content p,
+.modal-content .form-text {
+    color: #000000 !important;  /* Ensure visibility */
+}
+
+/* Input fields + textarea */
+.modal-content input,
+.modal-content textarea {
+    background-color: #f8f9fa !important; /* Light gray background */
+    color: #000000 !important;            /* Black text */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Placeholder text */
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+    color: #6c757d !important; /* Medium gray */
+}
+
+/* Buttons */
+.modal-content .btn-primary {
+    background: linear-gradient(90deg, #4b6cb7, #182848);
+    color: #ffffff !important;
+    border: none;
+}
+
+.modal-content .btn-secondary {
+    background-color: #e9ecef !important;
+    color: #000000 !important;
+}
+#applicationModal #departmentName {
+    color: #333333 !important; /* Dark gray for readability */
+    font-weight: 500;
+}
+</style>
+
 <div class="row">
     <div class="col-12">
         <div class="card mb-4">
