@@ -4,66 +4,82 @@
 
 {% block content %}
 
-<!-- Fix for Match Breakdown labels -->
 <style>
-/* Make Match Breakdown labels visible */
-.card .card-body .small {
-    color: #000 !important;   /* Black text for visibility */
-    font-weight: 600;         /* Bold for better readability */
+/* General fix for muted text */
+.card .text-muted,
+.card-footer .text-muted,
+.text-muted {
+    color: #222 !important;
+    font-weight: 500;
 }
 
-.card .card-body h6 {
-    color: #000000 !important;  /* Solid black for visibility */
+/* Footer info */
+.card-footer small.text-muted {
+    color: #000 !important;
+}
+
+/* Company/department names */
+.card-body strong,
+.card-body h5 {
+    color: #000000 !important;
     font-weight: 600;
 }
 
+/* Badge text */
+.badge.bg-primary {
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+/* Match breakdown labels */
+.card .card-body .small {
+    color: #000 !important;
+    font-weight: 600;
+}
+.card .card-body h6 {
+    color: #000 !important;
+    font-weight: 600;
+}
+
+/* Modal styling */
 .modal-content {
-    background-color: #ffffff !important; /* White background */
-    color: #000000 !important;            /* Black text */
+    background-color: #ffffff !important;
+    color: #000000 !important;
     border-radius: 10px;
     padding: 20px;
 }
-
-/* Headings, labels, helper text */
 .modal-content h5,
 .modal-content h6,
 .modal-content label,
 .modal-content p,
 .modal-content .form-text {
-    color: #000000 !important;  /* Ensure visibility */
+    color: #000 !important;
 }
-
-/* Input fields + textarea */
 .modal-content input,
 .modal-content textarea {
-    background-color: #f8f9fa !important; /* Light gray background */
-    color: #000000 !important;            /* Black text */
+    background-color: #f8f9fa !important;
+    color: #000 !important;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px;
     width: 100%;
     margin-bottom: 10px;
 }
-
-/* Placeholder text */
 .modal-content input::placeholder,
 .modal-content textarea::placeholder {
-    color: #6c757d !important; /* Medium gray */
+    color: #6c757d !important;
 }
-
-/* Buttons */
 .modal-content .btn-primary {
     background: linear-gradient(90deg, #4b6cb7, #182848);
     color: #ffffff !important;
     border: none;
 }
-
 .modal-content .btn-secondary {
     background-color: #e9ecef !important;
-    color: #000000 !important;
+    color: #000 !important;
 }
 #applicationModal #departmentName {
-    color: #333333 !important; /* Dark gray for readability */
+    color: #555 !important;
     font-weight: 500;
 }
 </style>
@@ -109,12 +125,12 @@
                                     
                                     <div class="row g-2 mb-3">
                                         <div class="col-auto">
-                                            <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                            <i class="fas fa-city text-muted me-1"></i>
                                             <span class="small">{{ match.internship.location or 'Location not specified' }}</span>
                                         </div>
                                         {% if match.internship.sector %}
                                         <div class="col-auto">
-                                            <i class="fas fa-industry text-muted me-1"></i>
+                                            <i class="fas fa-microchip text-muted me-1"></i>
                                             <span class="small">{{ match.internship.sector }}</span>
                                         </div>
                                         {% endif %}
@@ -126,7 +142,7 @@
                                         {% endif %}
                                         {% if match.internship.stipend %}
                                         <div class="col-auto">
-                                            <i class="fas fa-rupee-sign text-muted me-1"></i>
+                                            <i class="fas fa-indian-rupee-sign text-muted me-1"></i>
                                             <span class="small">{{ "%.0f"|format(match.internship.stipend) }}/month</span>
                                         </div>
                                         {% endif %}
