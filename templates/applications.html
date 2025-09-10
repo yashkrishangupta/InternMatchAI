@@ -104,24 +104,24 @@
                                     
                                     <div class="row g-2 mb-3">
                                         <div class="col-auto">
-                                            <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                            <i class="fas fa-map-marker-alt me-1"></i>
                                             <span class="small">{{ application.internship.location or 'Location not specified' }}</span>
                                         </div>
                                         {% if application.internship.sector %}
                                         <div class="col-auto">
-                                            <i class="fas fa-industry text-muted me-1"></i>
+                                            <i class="fas fa-industry me-1"></i>
                                             <span class="small">{{ application.internship.sector }}</span>
                                         </div>
                                         {% endif %}
                                         {% if application.internship.duration_months %}
                                         <div class="col-auto">
-                                            <i class="fas fa-clock text-muted me-1"></i>
+                                            <i class="fas fa-clock me-1"></i>
                                             <span class="small">{{ application.internship.duration_months }} months</span>
                                         </div>
                                         {% endif %}
                                         {% if application.internship.stipend %}
                                         <div class="col-auto">
-                                            <i class="fas fa-rupee-sign text-muted me-1"></i>
+                                            <i class="fas fa-rupee-sign me-1"></i>
                                             <span class="small">{{ "%.0f"|format(application.internship.stipend) }}/month</span>
                                         </div>
                                         {% endif %}
