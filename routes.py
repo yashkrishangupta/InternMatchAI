@@ -884,7 +884,7 @@ def delete_department(dept_id):
     
     return redirect(url_for('main.manage_departments'))
 
-@bp.route('/admin/generate-all-matches')
+@bp.route('/generate-all-matches')
 def generate_all_matches():
     """Admin function to generate matches for all students"""
     if session.get('user_type') != 'admin':
