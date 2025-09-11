@@ -639,7 +639,20 @@ def department_applications():
                                   .filter(Internship.department_id == department_id)\
                                   .order_by(Application.applied_at.desc()).all()
     
-    return render_template('department_applications.html', applications=applications)
+    # Calculate match percentages for each application
+    applications_with_match = []
+    for application in applications:
+        match_percentage = matching_engine.calculate_match_percentage(
+            application.student, 
+            application.internship
+        )
+        applications_with_match.append({
+            'application': application,
+            'match_percentage': match_percentage
+        })
+    
+    return render_template('department_applications.html', 
+                         applications_with_match=applications_with_match)
 
 @bp.route('/internship/<int:internship_id>/applications')
 def internship_applications(internship_id):
@@ -657,9 +670,21 @@ def internship_applications(internship_id):
     applications = Application.query.filter_by(internship_id=internship_id)\
                                   .order_by(Application.applied_at.desc()).all()
     
+    # Calculate match percentages for each application
+    applications_with_match = []
+    for application in applications:
+        match_percentage = matching_engine.calculate_match_percentage(
+            application.student, 
+            internship
+        )
+        applications_with_match.append({
+            'application': application,
+            'match_percentage': match_percentage
+        })
+    
     return render_template('internship_applications.html', 
                          internship=internship, 
-                         applications=applications)
+                         applications_with_match=applications_with_match)
 
 @bp.route('/department/student/<int:student_id>')
 def view_student_profile(student_id):
