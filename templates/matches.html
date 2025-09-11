@@ -118,9 +118,14 @@
                                                 <strong>{{ match.internship.department.name }}</strong>
                                             </p>
                                         </div>
-                                        <span class="badge bg-primary fs-6">
-                                            {{ "%.0f"|format(match.overall_score * 100) }}% Match
-                                        </span>
+                                        {% set match_percentage = (match.overall_score * 100)|int %}
+                                        {% if match_percentage >= 70 %}
+                                            <span class="badge bg-success fs-6">{{ match_percentage }}% Match</span>
+                                        {% elif match_percentage >= 50 %}
+                                            <span class="badge bg-warning fs-6">{{ match_percentage }}% Match</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary fs-6">{{ match_percentage }}% Match</span>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="row g-2 mb-3">
