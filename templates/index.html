@@ -9,7 +9,7 @@
 </div>
 
 <!-- Header Section with Rotating Globe -->
-<div class="header-container mb-5">
+<div id = "home" class="header-container mb-5">
     <div id="globe-container"></div>
     <div class="header-text text-center">
         <h1 class="display-4 fw-bold mb-3">
@@ -35,7 +35,7 @@
         <div class="col-lg-10">
 
             <!-- Features Section -->
-            <div id='features' class="row g-4 mb-5">
+            <div id="features" class="row g-4 mb-5">
                 <div class="col-md-4">
                     <div class="card h-100 shadow-sm border-0 rounded-4">
                         <div class="card-body text-center">
@@ -157,7 +157,7 @@
             {% endif %}
 
             <!-- How It Works Section -->
-            <div id='How-it-works' class="mt-5 pt-5 text-center">
+            <div id="how-it-works" class="mt-5 pt-5 text-center">
                 <h2 class="fw-bold mb-5">How It Works</h2>
                 <div class="row g-5">
                     <div class="col-md-3">
@@ -401,9 +401,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function smoothScroll(event) {
     event.preventDefault();
-    const target = document.querySelector('#get-started');
-    if (target) {
-        target.scrollIntoView({
+    const targetId = event.currentTarget.getAttribute("href");
+    const targetElement = document.querySelector(targetId);
+    if (targetElement) {
+        targetElement.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
         });
