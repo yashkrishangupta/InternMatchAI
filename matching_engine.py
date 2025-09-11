@@ -258,6 +258,54 @@ class InternshipMatchingEngine:
             db.session.rollback()
             return []
     
+    def calculate_match_percentage(self, student, internship):
+        """Calculate match percentage between a student and internship (on-demand)"""
+        try:
+            # Calculate individual scores using existing methods
+            skills_score = self.calculate_skills_similarity(
+                (student.technical_skills or "") + " " + (student.soft_skills or ""),
+                internship.required_skills
+            )
+            
+            location_score = self.calculate_location_score(
+                student.preferred_locations,
+                student.current_location,
+                internship.location
+            )
+            
+            academic_score = self.calculate_academic_score(student, internship)
+            
+            affirmative_action_score = self.calculate_affirmative_action_score(student, internship)
+            
+            sector_score = self.calculate_sector_interest_score(
+                student.sector_interests,
+                internship.sector
+            )
+            
+            # Weighted overall score (same weights as in generate_matches_for_student)
+            weights = {
+                'skills': 0.35,
+                'academic': 0.25,
+                'location': 0.20,
+                'sector': 0.15,
+                'affirmative_action': 0.05
+            }
+            
+            overall_score = float(
+                skills_score * weights['skills'] +
+                academic_score * weights['academic'] +
+                location_score * weights['location'] +
+                sector_score * weights['sector'] +
+                affirmative_action_score * weights['affirmative_action']
+            )
+            
+            # Return percentage (0-100)
+            return round(overall_score * 100, 1)
+            
+        except Exception as e:
+            logging.error(f"Error calculating match percentage: {e}")
+            return 0.0
+
     def generate_all_matches(self):
         """Generate matches for all students"""
         try:
