@@ -556,3 +556,118 @@ footer {
 .text-muted {
     color: var(--light-theme-text) !important;
 }
+
+.feature-icon {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 20px !important;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)) !important;
+    border: 2px solid rgba(59, 130, 246, 0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 2rem !important;
+    margin: 0 auto 1rem !important;
+    transition: all 0.3s ease !important;
+    color: #3b82f6 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.feature-icon:hover {
+    transform: translateY(-5px) scale(1.1) !important;
+    color: #2563eb !important;
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2) !important;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 2px solid rgba(59, 130, 246, 0.2) !important;
+    border-radius: 20px !important;
+    backdrop-filter: blur(15px) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.02) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.card-title {
+    font-weight: 600 !important;
+    font-size: 1.4rem !important;
+    margin-bottom: 1rem !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.card-text {
+    color: #374151 !important;
+    font-weight: 500 !important;
+    line-height: 1.6 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.header-text .lead,
+.lead {
+    color: #374151 !important;
+    font-size: 1.3rem !important;
+    font-weight: 500 !important;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9) !important;
+    margin-bottom: 1.5rem !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    line-height: 1.6 !important;
+}
+
+.header-text .lead .text-info,
+.lead .text-info {
+    color: #2563eb !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
+}
+
+.navbar-brand {
+    font-weight: 700 !important;
+    font-size: 1.8rem !important;
+    color: #ffffff !important;  /* white for dark navbar */
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    color: #6b5dd1; /* Your text color */
+    text-shadow: 2px 2px 4px rgba(117, 111, 111, 0.2); /* light shadow */
+}
+
+.navbar-brand i {
+    color: #3b82f6 !important;
+    margin-right: 0.5rem !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand i:hover {
+    transform: rotate(-10deg) scale(1.2); /* little icon animation on hover */
+}
+
+/* ==== FIX NAVBAR TEXT VISIBILITY ==== */
+.nav-link {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+
+
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+    text-shadow: 0 2px 8px rgba(59, 130, 246, 0.8) !important;
+    transform: translateY(-2px) !important;}
