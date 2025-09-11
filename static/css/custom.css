@@ -183,6 +183,8 @@ body::before {
 .progress {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid black;
+}
 }
 
 .progress-bar {
